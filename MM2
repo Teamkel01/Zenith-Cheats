@@ -1316,7 +1316,7 @@ task.spawn(function()
 							marker = Instance.new("Part")
 							marker.Name = "GunMarker"
 							marker.Size = Vector3.new(5, 5, 5)
-							marker.Transparency = 1
+							marker.Transparency = 0
 							marker.CanCollide = false
 							marker.Anchored = true
 							marker.CFrame = gun.CFrame
