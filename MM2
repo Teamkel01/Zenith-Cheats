@@ -1304,14 +1304,16 @@ local gunesp = false
 task.spawn(function()
 	while task.wait(1) do
 		if gunesp then
-			for _, models in workspace:GetChildren() do
+			for _, models in ipairs(workspace:GetChildren()) do
 				local gun = models:FindFirstChild("GunDrop")
+				local marker = models:FindFirstChild("GunMarker")
+
 				if gun then
-					if not models:FindFirstChild("GunMarker") then
-						local marker = Instance.new("Part")
+					if not marker then
+						marker = Instance.new("Part")
 						marker.Name = "GunMarker"
 						marker.Size = Vector3.new(5, 5, 5)
-						marker.Transparency = 0
+						marker.Transparency = 1
 						marker.CanCollide = false
 						marker.Anchored = true
 						marker.CFrame = gun.CFrame
@@ -1322,13 +1324,40 @@ task.spawn(function()
 						hl.FillColor = Color3.fromRGB(0, 255, 0)
 						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
 						hl.Parent = marker
+					else
+						marker.CFrame = gun.CFrame
 					end
 				else
-					models:FindFirstChild("GunMarker"):Destroy()
+					if marker then
+						marker:Destroy()
+					end
 				end
 			end
 		end
 	end
+end)
+
+local autogun
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local workspace = game:GetService("Workspace")
+
+local function teleportToGun(gun)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local hrp = player.Character.HumanoidRootPart
+        local originalCFrame = hrp.CFrame
+
+        hrp.CFrame = gun.CFrame
+        task.wait(0.1)
+        hrp.CFrame = originalCFrame
+    end
+end
+
+workspace.ChildAdded:Connect(function(child)
+    if autogun and child:FindFirstChild("GunDrop") then
+        teleportToGun(child:FindFirstChild("GunDrop"))
+    end
 end)
 
 
@@ -1406,6 +1435,26 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Tab = GUI:CreateTab({
+	Text = "Auto",
+	icon = "rbxassetid://2790547157"
+})
+
+local section = GUI:Section({
+	text = "Auto"
+}, Tab)
+
+local Toggle = GUI:Toggle({
+	text = "Auto Gun",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			autogun = false
+		else
+			autogun = true
+		end
+	end
+}, section)
+
+local Tab = GUI:CreateTab({
 	Text = "Buttons",
 	icon = "rbxassetid://2790547157"
 })
@@ -1419,7 +1468,10 @@ local button1 = GUI:Button({
 	Callback = function()
 		for _, models in workspace:GetChildren() do
 			if models:FindFirstChild("GunDrop") then
+				local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
 				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
+				task.wait(0.1)
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
 			end
 		end
 	end,
