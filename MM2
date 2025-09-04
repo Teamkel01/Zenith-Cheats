@@ -1295,7 +1295,7 @@ task.spawn(function()
 					if not models:FindFirstChild("GunMarker") then
 						local marker = Instance.new("Part")
 						marker.Name = "GunMarker"
-						marker.Size = Vector3.new(1, 1, 1)
+						marker.Size = Vector3.new(3, 3, 3)
 						marker.Transparency = 0
 						marker.CanCollide = false
 						marker.Anchored = true
@@ -1308,6 +1308,8 @@ task.spawn(function()
 						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
 						hl.Parent = marker
 					end
+				else
+					models:FindFirstChild("GunMarker"):Destroy()
 				end
 			end
 		end
