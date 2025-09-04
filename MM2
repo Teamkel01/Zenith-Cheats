@@ -1308,6 +1308,9 @@ task.spawn(function()
 				local gun = models:FindFirstChild("GunDrop")
 				local marker = models:FindFirstChild("GunMarker")
 
+				if not gun then
+					marker:Destroy()
+				else
 				if gun then
 					if not marker then
 						marker = Instance.new("Part")
@@ -1324,12 +1327,6 @@ task.spawn(function()
 						hl.FillColor = Color3.fromRGB(0, 255, 0)
 						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
 						hl.Parent = marker
-					else
-						marker.CFrame = gun.CFrame
-					end
-				else
-					if marker then
-						marker:Destroy()
 					end
 				end
 			end
@@ -1343,21 +1340,17 @@ local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 local workspace = game:GetService("Workspace")
 
-local function teleportToGun(gun)
-    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        local hrp = player.Character.HumanoidRootPart
-        local originalCFrame = hrp.CFrame
-
-        hrp.CFrame = gun.CFrame
-        task.wait(0.1)
-        hrp.CFrame = originalCFrame
-    end
-end
-
-workspace.ChildAdded:Connect(function(child)
-    if autogun and child:FindFirstChild("GunDrop") then
-        teleportToGun(child:FindFirstChild("GunDrop"))
-    end
+task.spawn(function()
+	while task.wait(0.1) do
+		if autogun then
+				if models:FindFirstChild("GunDrop") then
+				local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
+				task.wait(0.1)
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
+			end
+		end
+	end
 end)
 
 
