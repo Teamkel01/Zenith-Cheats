@@ -1296,13 +1296,12 @@ task.spawn(function()
 						local marker = Instance.new("Part")
 						marker.Name = "GunMarker"
 						marker.Size = Vector3.new(1, 1, 1)
-						marker.Transparency = 1
+						marker.Transparency = 0
 						marker.CanCollide = false
 						marker.Anchored = true
 						marker.CFrame = gun.CFrame
 						marker.Parent = models
 
-						-- Add highlight to the marker part
 						local hl = Instance.new("Highlight")
 						hl.Name = "Highlight"
 						hl.FillColor = Color3.fromRGB(0, 255, 0)
