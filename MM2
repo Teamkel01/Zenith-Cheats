@@ -1348,6 +1348,7 @@ task.spawn(function()
 				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
 				task.wait(0.1)
 				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
+				end
 			end
 		end
 	end
