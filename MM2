@@ -1281,7 +1281,7 @@ task.spawn(function()
 					end
 				end
 
-				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or not player.Character:FindFirstChild("Gun")) then
+				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun")) then
 					if not player.Character:FindFirstChild("InnoESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "InnoESP"
