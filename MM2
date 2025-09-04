@@ -1387,9 +1387,9 @@ local Toggle = GUI:Toggle({
 	text = "Innocent Esp",
 	callback = function(ToggleActive)
 		if ToggleActive then
-			sheriffesp = false
+			innocentesp = false
 		else
-			sheriffesp = true
+			innocentesp = true
 		end
 	end
 }, section)
