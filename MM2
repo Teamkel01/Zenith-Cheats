@@ -1267,7 +1267,7 @@ task.spawn(function()
 					end
 				end
 
-				if sheriffesp and (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun") or player.Character:FindFirstChild("Knife") or player.Backpack:FindFirstChild("Knife")) then
+				if sheriffesp and (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun")) then
 					if not player.Character:FindFirstChild("SheriffESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "SheriffESP"
@@ -1281,7 +1281,7 @@ task.spawn(function()
 					end
 				end
 
-				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun")) then
+				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun") or player.Character:FindFirstChildOfClass("Folder")) then
 					if not player.Character:FindFirstChild("InnoESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "InnoESP"
@@ -1331,9 +1331,9 @@ task.spawn(function()
 					end
 				end
 			end
-			end
 		end
-	end)
+	end
+end)
 
 local autogun = false
 
@@ -1345,11 +1345,11 @@ task.spawn(function()
 	while task.wait(0.1) do
 		if autogun then
 			for _, models in workspace:GetChildren() do
-			if models:FindFirstChild("GunDrop") then
-				local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
-				task.wait(0.1)
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
+				if models:FindFirstChild("GunDrop") then
+					local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
+					task.wait(0.1)
+					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
 				end
 			end
 		end
