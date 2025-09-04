@@ -1267,7 +1267,7 @@ task.spawn(function()
 					end
 				end
 
-				if sheriffesp and (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun")) then
+				if sheriffesp and (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun") or player.Character:FindFirstChild("Knife") or player.Backpack:FindFirstChild("Knife")) then
 					if not player.Character:FindFirstChild("SheriffESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "SheriffESP"
@@ -1311,28 +1311,29 @@ task.spawn(function()
 				if not gun then
 					marker:Destroy()
 				else
-				if gun then
-					if not marker then
-						marker = Instance.new("Part")
-						marker.Name = "GunMarker"
-						marker.Size = Vector3.new(5, 5, 5)
-						marker.Transparency = 1
-						marker.CanCollide = false
-						marker.Anchored = true
-						marker.CFrame = gun.CFrame
-						marker.Parent = models
+					if gun then
+						if not marker then
+							marker = Instance.new("Part")
+							marker.Name = "GunMarker"
+							marker.Size = Vector3.new(5, 5, 5)
+							marker.Transparency = 1
+							marker.CanCollide = false
+							marker.Anchored = true
+							marker.CFrame = gun.CFrame
+							marker.Parent = models
 
-						local hl = Instance.new("Highlight")
-						hl.Name = "Highlight"
-						hl.FillColor = Color3.fromRGB(0, 255, 0)
-						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-						hl.Parent = marker
+							local hl = Instance.new("Highlight")
+							hl.Name = "Highlight"
+							hl.FillColor = Color3.fromRGB(0, 255, 0)
+							hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+							hl.Parent = marker
+						end
 					end
 				end
 			end
+			end
 		end
-	end
-end)
+	end)
 
 local autogun = false
 
@@ -1343,7 +1344,8 @@ local workspace = game:GetService("Workspace")
 task.spawn(function()
 	while task.wait(0.1) do
 		if autogun then
-				if models:FindFirstChild("GunDrop") then
+			for _, models in workspace:GetChildren() do
+			if models:FindFirstChild("GunDrop") then
 				local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
 				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
 				task.wait(0.1)
