@@ -1253,7 +1253,7 @@ task.spawn(function()
 	while task.wait(1) do
 		for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
 			if player.Character then
-				if murdesp and (player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife")) then
+				if murdesp and player.Character:FindFirstChildOfClass("Folder") then
 					if not player.Character:FindFirstChild("MurderESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "MurderESP"
