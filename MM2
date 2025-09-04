@@ -1290,13 +1290,15 @@ task.spawn(function()
 	while task.wait(1) do
 		if gunesp then
 			for _, models in workspace:GetChildren() do
-				if models:FindFirstChild("GunDrop") then
-					if models:FindFirstChild("GunDrop"):FindFirstChild("GunEsp") then return end
-					local hl = Instance.new("Highlight")
-					hl.Name = "GunEsp"
-					hl.Parent = models:FindFirstChild("GunDrop")
-					hl.FillColor = Color3.fromRGB(0, 255, 0)
-					hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+				local gun = models:FindFirstChild("GunDrop")
+				if gun then
+					if not gun:FindFirstChild("Highlight") then
+						local hl = Instance.new("Highlight")
+						hl.Name = "Highlight"
+						hl.FillColor = Color3.fromRGB(0, 255, 0)
+						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+						hl.Parent = gun
+					end
 				end
 			end
 		end
@@ -1379,7 +1381,7 @@ local button1 = GUI:Button({
 	Callback = function()
 		for _, models in workspace:GetChildren() do
 			if models:FindFirstChild("GunDrop") then
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position = models:FindFirstChild("GunDrop").Position
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
 			end
 		end
 	end,
