@@ -1292,18 +1292,29 @@ task.spawn(function()
 			for _, models in workspace:GetChildren() do
 				local gun = models:FindFirstChild("GunDrop")
 				if gun then
-					if not gun:FindFirstChild("Highlight") then
+					if not models:FindFirstChild("GunMarker") then
+						local marker = Instance.new("Part")
+						marker.Name = "GunMarker"
+						marker.Size = Vector3.new(1, 1, 1)
+						marker.Transparency = 1
+						marker.CanCollide = false
+						marker.Anchored = true
+						marker.CFrame = gun.CFrame
+						marker.Parent = models
+
+						-- Add highlight to the marker part
 						local hl = Instance.new("Highlight")
 						hl.Name = "Highlight"
 						hl.FillColor = Color3.fromRGB(0, 255, 0)
 						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-						hl.Parent = gun
+						hl.Parent = marker
 					end
 				end
 			end
 		end
 	end
 end)
+
 
 
 local main = Library:Init { Title = "ZENITH | MM2" }
