@@ -1247,6 +1247,7 @@ end)
 
 local murdesp = false
 local sheriffesp = false
+local innocentesp = false
 
 task.spawn(function()
 	while task.wait(1) do
@@ -1279,6 +1280,20 @@ task.spawn(function()
 						player.Character.SheriffESP:Destroy()
 					end
 				end
+
+				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or not player.Character:FindFirstChild("Gun")) then
+					if not player.Character:FindFirstChild("InnoESP") then
+						local hl = Instance.new("Highlight")
+						hl.Name = "InnoESP"
+						hl.Parent = player.Character
+						hl.FillColor = Color3.fromRGB(0, 255, 0)
+						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+					end
+				else
+					if player.Character:FindFirstChild("InnoESP") then
+						player.Character.InnoESP:Destroy()
+					end
+				end
 			end
 		end
 	end
@@ -1295,7 +1310,7 @@ task.spawn(function()
 					if not models:FindFirstChild("GunMarker") then
 						local marker = Instance.new("Part")
 						marker.Name = "GunMarker"
-						marker.Size = Vector3.new(3, 3, 3)
+						marker.Size = Vector3.new(5, 5, 5)
 						marker.Transparency = 0
 						marker.CanCollide = false
 						marker.Anchored = true
@@ -1359,6 +1374,17 @@ local Toggle = GUI:Toggle({
 
 local Toggle = GUI:Toggle({
 	text = "Sheriff Esp",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			sheriffesp = false
+		else
+			sheriffesp = true
+		end
+	end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "Innocent Esp",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			sheriffesp = false
