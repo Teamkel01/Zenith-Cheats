@@ -1337,7 +1337,7 @@ task.spawn(function()
 	end
 end)
 
-local autogun
+local autogun = false
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
