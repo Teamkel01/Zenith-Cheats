@@ -1284,6 +1284,21 @@ task.spawn(function()
 	end
 end)
 
+local gunesp = false
+
+task.spawn(function()
+	while task.wait(1) do
+		if gunesp then
+			for _, models in workspace:GetChildren() do
+			if models:FindFirstChild("GunDrop") then
+			if models:FindFirstChild("GunDrop"):FindFirstChild("GunEsp") then return end
+			local hl = Instance.new("Highlight")
+			hl.Name = "GunEsp"
+			hl.Parent = models:FindFirstChild("GunDrop")
+			hl.FillColor = Color3.fromRGB(0, 255, 0)
+			hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+end)
+
 
 local main = Library:Init { Title = "ZENITH | MM2" }
 
@@ -1299,7 +1314,7 @@ local section = GUI:Section({
 local Slider = GUI:Slider({
 	text = "WalkSpeed",
 	min = 16,
-	max = 100,
+	max = 40,
 	default = 16,
 	callback = function(value)
 		local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
@@ -1333,4 +1348,35 @@ local Toggle = GUI:Toggle({
 			sheriffesp = true
 		end
 	end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "Gun Esp",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			gunesp = false
+		else
+			gunesp = true
+		end
+	end
+}, section)
+
+local Tab = GUI:CreateTab({
+	Text = "Buttons",
+	icon = "rbxassetid://2790547157"
+})
+
+local section = GUI:Section({
+	text = "Innocent"
+}, Tab)
+
+local button1 = GUI:Button({
+	text = "Grab Gun",
+	Callback = function()
+		for _, models in workspace:GetChildren() do
+			if models:FindFirstChild("GunDrop") then
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").Position = models:FindFirstChild("GunDrop").Position
+			end
+		end
+	end,
 }, section)
