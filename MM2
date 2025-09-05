@@ -1245,98 +1245,94 @@ end)
 
 
 
-local murdesp = true
-local sheriffesp = true
-local innocentesp = true
-
+local murdesp = false
+local sheriffesp = false
+local innocentesp = false
 local roles
-local Murder, Sheriff, Hero
-local player = game.Players.LocalPlayer
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Create highlight for each player if missing
 function CreateHighlight()
-    for _, v in pairs(Players:GetChildren()) do
-        if v ~= player and v.Character and not v.Character:FindFirstChild("Highlight") then
-            local hl = Instance.new("Highlight")
+    for i, v in pairs(game:GetService("Players"):GetChildren()) do
+        if v ~= game:GetService("Players").LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
+            local hl = Instance.new("Highlight", v.Character)
             hl.FillTransparency = 1
             hl.OutlineTransparency = 1
-            hl.Parent = v.Character
         end
     end
 end
 
--- Check if player is alive
-function IsAlive(plr)
-    if not roles then return false end
-    for i, v in pairs(roles) do
-        if plr.Name == i then
-            return not (v.Killed or v.Dead)
-        end
-    end
-    return false
-end
-
--- Update highlights using original logic
 function UpdateHighlights()
-    for _, v in pairs(Players:GetChildren()) do
-        if v ~= player and v.Character and v.Character:FindFirstChild("Highlight") then
-            local Highlight = v.Character:FindFirstChild("Highlight")
-            if not Highlight then
-
-            -- Default hide
-            Highlight.FillTransparency = 1
-            Highlight.OutlineTransparency = 1
-
-            if Sheriff and v.Name == Sheriff and IsAlive(v) and sheriffesp then
-                Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-                Highlight.FillTransparency = 0
-                Highlight.OutlineTransparency = 0
-            elseif Murder and v.Name == Murder and IsAlive(v) and murdesp then
-                Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-                Highlight.FillTransparency = 0
-                Highlight.OutlineTransparency = 0
-            elseif Hero and v.Name == Hero and IsAlive(v) and Sheriff and Players:FindFirstChild(Sheriff) and not IsAlive(Players[Sheriff]) and sheriffesp then
-                Highlight.FillColor = Color3.fromRGB(255, 250, 0)
-                Highlight.FillTransparency = 0
-                Highlight.OutlineTransparency = 0
-            elseif innocentesp and IsAlive(v) then
-                Highlight.FillColor = Color3.fromRGB(0, 225, 0)
-                Highlight.FillTransparency = 0
-                Highlight.OutlineTransparency = 0
+    for _, v in pairs(game:GetService("Players"):GetChildren()) do
+        if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
+            if v.Name == Sheriff and IsAlive(v) then
+                if sheriffesp then
+                    local Highlight = v.Character:FindFirstChild("Highlight")
+                    Highlight.FillColor = Color3.fromRGB(0, 0, 225)
+                    Highlight.FillTransparency = 0
+                    Highlight.OutlineTransparency = 0
+                end
+            elseif v.Name == Murder and IsAlive(v) then
+                if murdesp then
+                    local Highlight = v.Character:FindFirstChild("Highlight")
+                    Highlight.FillColor = Color3.fromRGB(225, 0, 0)
+                    Highlight.FillTransparency = 0
+                    Highlight.OutlineTransparency = 0
+                end
+            elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
+                if sheriffesp then
+                    local Highlight = v.Character:FindFirstChild("Highlight")
+                    Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+                    Highlight.FillTransparency = 0
+                    Highlight.OutlineTransparency = 0
+                end
+            else
+                if innocentesp then
+                    local Highlight = v.Character:FindFirstChild("Highlight")
+                    Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+                    Highlight.FillTransparency = 0
+                    Highlight.OutlineTransparency = 0
+                end
             end
         end
     end
 end
+
+function IsAlive(Player)
+    for i, v in pairs(roles) do
+        if Player.Name == i then
+            if not v.Killed and not v.Dead then
+                return true
+            else
+                return false
+            end
+        end
+    end
 end
 
--- Recreate highlights on respawn
+local player = game.Players.LocalPlayer
+
 player.CharacterAdded:Connect(function(char)
+    -- Wait for character parts to load
     char:WaitForChild("HumanoidRootPart")
     char:WaitForChild("Humanoid")
-    CreateHighlight()
+    CreateHighlight() -- recreate highlights for the new character
 end)
 
--- Update roles + ESP
-RunService.RenderStepped:Connect(function()
-    local remote = ReplicatedStorage:FindFirstChild("GetPlayerData", true)
-    if remote and remote.InvokeServer then
-        local ok, data = pcall(function() return remote:InvokeServer() end)
-        if ok and data then
-            roles = data
-            for i, v in pairs(roles) do
-                if v.Role == "Murderer" then Murder = i end
-                if v.Role == "Sheriff" then Sheriff = i end
-                if v.Role == "Hero" then Hero = i end
-            end
+game:GetService("RunService").RenderStepped:Connect(function()
+    roles = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true):InvokeServer()
+    for i, v in pairs(roles) do
+        if v.Role == "Murderer" then
+            Murder = i
+        elseif v.Role == "Sheriff" then
+            Sheriff = i
+        elseif v.Role == "Hero" then
+            Hero = i
         end
     end
-
     CreateHighlight()
     UpdateHighlights()
 end)
+
+
 
 
 
