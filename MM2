@@ -1453,6 +1453,33 @@ task.spawn(function()
     end
 end)
 
+local silentknife = false
+
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local RunService = game:GetService("RunService")
+    
+    while task.wait(0.01) do
+        if silentknife then
+            for _, player in pairs(Players:GetPlayers()) do
+				if player ~= localPlayer then
+
+			function getNil(name,class) for _,v in pairs(getnilinstances())do if v.ClassName==class and v.Name==name then return v;end end end
+
+			local args = {
+			    [1] = localPlayer.Character.HumanoidRootPart.CFrame,
+			    [2] = player.Character.HumanoidRootPart.Position
+			}
+
+			getNil("Knife", "Tool").Throw:FireServer(unpack(args))
+				end
+			end
+		end
+    end
+end)
+
+
 
 
 local main = Library:Init { Title = "ZENITH | MM2" }
@@ -1525,12 +1552,23 @@ local section = GUI:Section({
 }, Tab)
 
 local Toggle = GUI:Toggle({
-	text = "Silent Aim Murderer",
+	text = "Silent Aim",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			silentaim = false
 		else
 			silentaim = true
+		end
+	end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "Kill All",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			silentknife = false
+		else
+			silentknife = true
 		end
 	end
 }, section)
