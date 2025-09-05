@@ -1379,7 +1379,7 @@ end)
 local autogun = false
 task.spawn(function()
     while task.wait(0.1) do
-		if not LP.Backpack:FindFirstChild("Knife") or not LP.Character:FindFirstChild("Knife") then
+		if not LP.Backpack:FindFirstChild("Knife") or LP.Character:FindFirstChild("Knife") then
         if autogun then
             for _, models in workspace:GetChildren() do
                 if models:FindFirstChild("GunDrop") then
@@ -1429,6 +1429,75 @@ task.spawn(function()
             end
         end
     end
+end)
+
+local autocoin = false
+
+local function getRoot()
+    if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+        return LP.Character.HumanoidRootPart
+    end
+    return nil
+end
+
+LP.CharacterAdded:Connect(function()
+    repeat task.wait() until getRoot() ~= nil
+end)
+
+task.spawn(function()
+    while task.wait(0.1) do
+		local root = getRoot()
+        if autocoin and root then
+            local distance = math.huge
+            local closest = nil
+			local tweenService = game:GetService("TweenService")
+
+            for _, model in pairs(workspace:GetChildren()) do
+                local coinContainer = model:FindFirstChild("CoinContainer")
+                if coinContainer then
+                    for _, coinServer in pairs(coinContainer:GetChildren()) do
+                        if coinServer.Name == "Coin_Server" then
+                            local mag = (root.Position - coinServer.Position).magnitude
+                            if mag < distance then
+                                distance = mag
+                                closest = coinServer
+                            end
+                        end
+                    end
+                end
+            end
+
+			if closest then
+				local duration = math.min(distance / 25, 5)
+                local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+                local goal = {CFrame = closest.CFrame - Vector3.new(0,2,0)}
+                local tween = tweenService:Create(root, tweenInfo, goal)
+
+                if activeTween then
+                    activeTween:Cancel()
+                end
+
+                tween:Play()
+				root.Anchored = true
+                tween.Completed:Wait()
+
+                task.wait(0.1)
+
+                if closest then
+                    closest:Destroy()
+                end
+			end
+        end
+    end
+end)
+
+task.spawn(function()
+	 while task.wait(0.1) do
+		local root = getRoot()
+		 if autocoin == false and root then
+			root.Anchored = false
+		 end
+	 end
 end)
 
 local main = Library:Init { Title = "ZENITH" }
@@ -1517,6 +1586,22 @@ local Toggle = GUI:Toggle({
 	end
 }, section)
 
+local section = GUI:Section({
+	text = "Auto"
+}, Tab)
+
+
+local Toggle = GUI:Toggle({
+	text = "Gun Grabber",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			autogun = false
+		else
+			autogun = true
+		end
+	end
+}, section)
+
 local Toggle = GUI:Toggle({
 	text = "Auto Shoot",
 	callback = function(ToggleActive)
@@ -1529,12 +1614,12 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Toggle = GUI:Toggle({
-	text = "Gun Grabber",
+	text = "Auto Coin",
 	callback = function(ToggleActive)
 		if ToggleActive then
-			autogun = false
+			autocoin = false
 		else
-			autogun = true
+			autocoin = true
 		end
 	end
 }, section)
@@ -1551,7 +1636,7 @@ local section = GUI:Section({
 local button1 = GUI:Button({
 	text = "Murderer",
 	Callback = function()
-		for _, plrs in game:GetService("players"):GetPlayers() do
+		for _, plrs in pairs(game:GetService("Players"):GetPlayers()) do
 			if plrs.Backpack:FindFirstChild("Knife") or plrs.Character:FindFirstChild("Knife") then
 				LP.Character.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
 			end
@@ -1562,7 +1647,7 @@ local button1 = GUI:Button({
 local button1 = GUI:Button({
 	text = "Sheriff",
 	Callback = function()
-		for _, plrs in game:GetService("players"):GetPlayers() do
+		for _, plrs in pairs(game:GetService("Players"):GetPlayers()) do
 			if plrs.Backpack:FindFirstChild("Gun") or plrs.Character:FindFirstChild("Gun") then
 				LP.Character.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
 			end
