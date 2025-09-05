@@ -1641,3 +1641,14 @@ local button1 = GUI:Button({
 		end
 	end,
 }, section)
+
+local button1 = GUI:Button({
+	text = "Teleport Murderer",
+	Callback = function()
+		for _, plrs in game:GetService("players"):GetPlayers() do
+			if plrs.Backpack:FindFirstChild("Knife") or plrs.Character:FindFirstChild("Knife") then
+				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame =  plrs.Character:FindFirstChild("HumanoidRootPart").CFrame + Vector3.new(0,3,0)
+			end
+		end
+	end,
+}, section)
