@@ -1388,6 +1388,7 @@ task.spawn(function()
 					if coinServer and not coinServer:FindFirstChild("CoinCham") then
 						local cc = Instance.new("Part")
 						cc.Size = Vector3.new(3, 3, 3)
+						cc.Position = coinServer.Position
 						cc.Name = "CoinCham"
 						cc.Anchored = true
 						cc.CanCollide = false
