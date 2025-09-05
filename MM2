@@ -1301,6 +1301,9 @@ end
 game:GetService("RunService").RenderStepped:connect(function()
 	roles = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true):InvokeServer()
 	for i, v in pairs(roles) do
+
+		if v.Role == if v.Killed and v.Dead then return end
+
 		if v.Role == "Murderer" then
 			Murder = i
 		elseif v.Role == 'Sheriff'then
