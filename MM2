@@ -1409,35 +1409,46 @@ end)
 local silentaim = false
 
 task.spawn(function()
-	while task.wait(0.1) do
-		if silentaim then
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local RunService = game:GetService("RunService")
+    
+    while task.wait(0.1) do
+        if silentaim then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
+                        
+                        -- LINE OF SIGHT CHECK
+                        local startPos = localPlayer.Character.HumanoidRootPart.Position
+                        local endPos = player.Character.HumanoidRootPart.Position
+                        local direction = endPos - startPos
+                        
+                        local raycastParams = RaycastParams.new()
+                        raycastParams.FilterDescendantsInstances = {localPlayer.Character}
+                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                        
+                        local result = workspace:Raycast(startPos, direction, raycastParams)
 
-for _, player in pairs(Players:GetPlayers()) do
-    if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-        if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
-
-			local distance = (player.Character.HumanoidRootPart.Position - localPlayer.Character.HumanoidRootPart.Position).magnitude
-
-			if distance < 20 then
-
-            local args = {
-                1,
-                player.Character.HumanoidRootPart.Position,
-                "AH2"
-            }
-
-            if localPlayer.Character and localPlayer.Character:FindFirstChild("Gun") and localPlayer.Character.Gun:FindFirstChild("KnifeLocal") and localPlayer.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") then
-                localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+                        if not result or result.Instance:IsDescendantOf(player.Character) then
+                            local args = {
+                                1,
+                                player.Character.HumanoidRootPart.Position,
+                                "AH2"
+                            }
+                            
+                            if localPlayer.Character and localPlayer.Character:FindFirstChild("Gun") and localPlayer.Character.Gun:FindFirstChild("KnifeLocal") and localPlayer.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") then
+                                localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+                            end
+                        end
+                        
+                    end
+                end
             end
-		end
         end
     end
-end
-end
-end
 end)
+
 
 
 local main = Library:Init { Title = "ZENITH | MM2" }
