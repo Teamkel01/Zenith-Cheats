@@ -1422,25 +1422,45 @@ end)
 
 
 
+local silentaim = false
+
 task.spawn(function()
-    while task.wait(0.1) do
-        if autogun and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            for _, models in workspace:GetChildren() do
-                local gun = models:FindFirstChild("GunDrop")
-                if gun then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local org = hrp.CFrame
-                        hrp.CFrame = gun.CFrame
-                        task.wait(0.1)
-                        hrp.CFrame = org
+    local Players = game:GetService("Players")
+    local localPlayer = Players.LocalPlayer
+    local RunService = game:GetService("RunService")
+    
+    while task.wait(0.01) do
+        if silentaim then
+            for _, player in pairs(Players:GetPlayers()) do
+                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
+                        
+                        local startPos = localPlayer.Character.HumanoidRootPart.Position
+                        local endPos = player.Character.HumanoidRootPart.Position
+                        local direction = endPos - startPos
+                        
+                        local raycastParams = RaycastParams.new()
+                        raycastParams.FilterDescendantsInstances = {localPlayer.Character}
+                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                        
+                        local result = workspace:Raycast(startPos, direction, raycastParams)
+
+                        if not result or result.Instance:IsDescendantOf(player.Character) then
+                            local args = {
+                                1,
+                                player.Character.HumanoidRootPart.Position,
+                                "AH2"
+                            }
+                            
+                                localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+                        end
+                        
                     end
                 end
             end
         end
     end
 end)
-
 
 local silentknife = false
 
@@ -1457,8 +1477,8 @@ task.spawn(function()
 			function getNil(name,class) for _,v in pairs(getnilinstances())do if v.ClassName==class and v.Name==name then return v;end end end
 
 			local args = {
-			    [1] = player.Character.HumanoidRootPart.CFrame,
-			    [2] = player.Character.HumanoidRootPart.Position
+			    player.Character.HumanoidRootPart.CFrame,
+			    player.Character.HumanoidRootPart.Position
 			}
 
 			getNil("Knife", "Tool").Throw:FireServer(unpack(args))
