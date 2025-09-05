@@ -1337,6 +1337,7 @@ end)
 local autogun = false
 task.spawn(function()
     while task.wait(0.1) do
+		if not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Knife") or game:GetService("Players").LocalPlayer.Character:FindFirstChild("Knife") then
         if autogun and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             for _, models in workspace:GetChildren() do
                 if models:FindFirstChild("GunDrop") then
@@ -1346,6 +1347,7 @@ task.spawn(function()
                         hrp.CFrame = models.GunDrop.CFrame
                         task.wait(0.01)
                         hrp.CFrame = org
+					end
                     end
                 end
             end
