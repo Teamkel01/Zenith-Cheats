@@ -1253,7 +1253,14 @@ task.spawn(function()
 	while task.wait(1) do
 		for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
 			if player.Character then
-				if murdesp and player.Character:FindFirstChildOfClass("Folder") then
+
+				roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+
+				for i, v in pairs(roles) do
+
+				if v.Role = "Dead" then return end
+
+				if murdesp and v.Role == "Murderer" then
 					if not player.Character:FindFirstChild("MurderESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "MurderESP"
@@ -1267,7 +1274,7 @@ task.spawn(function()
 					end
 				end
 
-				if sheriffesp and (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun")) then
+				if sheriffesp and v.Role == "Sheriff" then
 					if not player.Character:FindFirstChild("SheriffESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "SheriffESP"
@@ -1281,7 +1288,7 @@ task.spawn(function()
 					end
 				end
 
-				if innocentesp and not (player.Backpack:FindFirstChild("Gun") or player.Character:FindFirstChild("Gun") or player.Character:FindFirstChildOfClass("Folder")) then
+				if innocentesp and not v.Role == "Murderer" or v.Role == "Sheriff" then
 					if not player.Character:FindFirstChild("InnoESP") then
 						local hl = Instance.new("Highlight")
 						hl.Name = "InnoESP"
@@ -1292,6 +1299,7 @@ task.spawn(function()
 				else
 					if player.Character:FindFirstChild("InnoESP") then
 						player.Character.InnoESP:Destroy()
+						end
 					end
 				end
 			end
