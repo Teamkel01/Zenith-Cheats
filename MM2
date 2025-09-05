@@ -1245,174 +1245,99 @@ end)
 
 
 
-
--- Fixed full script (ESP + other features)
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local workspace = game:GetService("Workspace")
-local RunService = game:GetService("RunService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local UserInputService = game:GetService("UserInputService")
-
--- ESP toggles (set true to test)
 local murdesp = true
 local sheriffesp = true
 local innocentesp = true
 
-local rolesRaw = nil           -- original server response
-local rolesByName = {}         -- mapped by player.Name
-local MurderName, SheriffName, HeroName
+local roles
+local Murder, Sheriff, Hero
+local player = game.Players.LocalPlayer
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Create or ensure highlight exists on characters and set Adornee
-local function CreateHighlight()
-    for _, pl in pairs(Players:GetPlayers()) do
-        if pl ~= player and pl.Character then
-            local char = pl.Character
-            local hl = char:FindFirstChild("Highlight")
-            if not hl then
-                hl = Instance.new("Highlight")
-                hl.Name = "Highlight"
-                hl.Parent = char
-            end
-            -- default hidden
+-- Create highlight for each player if missing
+function CreateHighlight()
+    for _, v in pairs(Players:GetChildren()) do
+        if v ~= player and v.Character and not v.Character:FindFirstChild("Highlight") then
+            local hl = Instance.new("Highlight")
             hl.FillTransparency = 1
             hl.OutlineTransparency = 1
-
-            -- pick best adornee: HumanoidRootPart, PrimaryPart or the model (pcall for safety)
-            local adornee = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart or char
-            pcall(function() hl.Adornee = adornee end)
+            hl.Parent = v.Character
         end
     end
 end
 
--- Return whether a Player instance is alive using the rolesByName mapping
-local function IsAlive(pl)
-    if not pl or not pl.Name then return false end
-    local info = rolesByName[pl.Name]
-    if not info then return false end
-    return not (info.Killed or info.Dead)
+-- Check if player is alive
+function IsAlive(plr)
+    if not roles then return false end
+    for i, v in pairs(roles) do
+        if plr.Name == i then
+            return not (v.Killed or v.Dead)
+        end
+    end
+    return false
 end
 
--- Update highlights according to role mapping and toggles
-local function UpdateHighlights()
-    for _, pl in pairs(Players:GetPlayers()) do
-        if pl ~= player and pl.Character then
-            local char = pl.Character
-            local hl = char:FindFirstChild("Highlight")
-            if not hl then
-                -- create if missing
-                hl = Instance.new("Highlight")
-                hl.Name = "Highlight"
-                hl.Parent = char
-                local adornee = char:FindFirstChild("HumanoidRootPart") or char.PrimaryPart or char
-                pcall(function() hl.Adornee = adornee end)
-            end
+-- Update highlights using original logic
+function UpdateHighlights()
+    for _, v in pairs(Players:GetChildren()) do
+        if v ~= player and v.Character and v.Character:FindFirstChild("Highlight") then
+            local Highlight = v.Character:FindFirstChild("Highlight")
+            if not Highlight then
 
-            -- default: hide
-            hl.FillTransparency = 1
-            hl.OutlineTransparency = 1
+            -- Default hide
+            Highlight.FillTransparency = 1
+            Highlight.OutlineTransparency = 1
 
-            -- show depending on role and toggles and alive state
-            if SheriffName and pl.Name == SheriffName and sheriffesp and IsAlive(pl) then
-                hl.FillColor = Color3.fromRGB(0, 0, 225)
-                hl.FillTransparency = 0
-                hl.OutlineTransparency = 0
-            elseif MurderName and pl.Name == MurderName and murdesp and IsAlive(pl) then
-                hl.FillColor = Color3.fromRGB(225, 0, 0)
-                hl.FillTransparency = 0
-                hl.OutlineTransparency = 0
-            elseif HeroName and pl.Name == HeroName and sheriffesp and IsAlive(pl) then
-                -- only highlight Hero when Sheriff is dead (match original behaviour)
-                local sheriffPlayer = (SheriffName and Players:FindFirstChild(SheriffName))
-                if not sheriffPlayer or not IsAlive(sheriffPlayer) then
-                    hl.FillColor = Color3.fromRGB(255, 250, 0)
-                    hl.FillTransparency = 0
-                    hl.OutlineTransparency = 0
-                end
-            elseif innocentesp and IsAlive(pl) then
-                -- generic innocent highlight
-                hl.FillColor = Color3.fromRGB(0, 225, 0)
-                hl.FillTransparency = 0
-                hl.OutlineTransparency = 0
+            if Sheriff and v.Name == Sheriff and IsAlive(v) and sheriffesp then
+                Highlight.FillColor = Color3.fromRGB(0, 0, 225)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif Murder and v.Name == Murder and IsAlive(v) and murdesp then
+                Highlight.FillColor = Color3.fromRGB(225, 0, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif Hero and v.Name == Hero and IsAlive(v) and Sheriff and Players:FindFirstChild(Sheriff) and not IsAlive(Players[Sheriff]) and sheriffesp then
+                Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif innocentesp and IsAlive(v) then
+                Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
             end
         end
     end
 end
+end
 
--- Recreate highlights when local player respawns
+-- Recreate highlights on respawn
 player.CharacterAdded:Connect(function(char)
-    char:WaitForChild("HumanoidRootPart", 5)
-    char:WaitForChild("Humanoid", 5)
+    char:WaitForChild("HumanoidRootPart")
+    char:WaitForChild("Humanoid")
     CreateHighlight()
 end)
 
--- Utility: build rolesByName from server response (handles numeric userIds or name keys)
-local function BuildRoleMappings(rawRoles)
-    rolesByName = {}
-    MurderName, SheriffName, HeroName = nil, nil, nil
-
-    for key, data in pairs(rawRoles or {}) do
-        local ply = nil
-
-        -- try numeric id first
-        local maybeNum = tonumber(key)
-        if maybeNum then
-            ply = Players:GetPlayerByUserId(maybeNum)
-        end
-
-        -- if not found, try treating key as a player name
-        if not ply then
-            ply = Players:FindFirstChild(tostring(key))
-        end
-
-        -- if still not found, iterate players searching by matching fields (fallback)
-        if not ply then
-            for _, p in pairs(Players:GetPlayers()) do
-                if tostring(p.UserId) == tostring(key) or p.Name == tostring(key) then
-                    ply = p
-                    break
-                end
-            end
-        end
-
-        if ply then
-            rolesByName[ply.Name] = {
-                Role = data.Role,
-                Killed = data.Killed,
-                Dead = data.Dead
-            }
-
-            if data.Role == "Murderer" then
-                MurderName = ply.Name
-            elseif data.Role == "Sheriff" then
-                SheriffName = ply.Name
-            elseif data.Role == "Hero" then
-                HeroName = ply.Name
-            end
-        end
-    end
-end
-
--- Main update loop (keeps role mapping up-to-date + ESP)
+-- Update roles + ESP
 RunService.RenderStepped:Connect(function()
-    -- safely try to get server roles (pcall to avoid errors killing the loop)
-    local ok, result = pcall(function()
-        local remote = ReplicatedStorage:FindFirstChild("GetPlayerData", true)
-        if remote and remote.InvokeServer then
-            return remote:InvokeServer()
+    local remote = ReplicatedStorage:FindFirstChild("GetPlayerData", true)
+    if remote and remote.InvokeServer then
+        local ok, data = pcall(function() return remote:InvokeServer() end)
+        if ok and data then
+            roles = data
+            for i, v in pairs(roles) do
+                if v.Role == "Murderer" then Murder = i end
+                if v.Role == "Sheriff" then Sheriff = i end
+                if v.Role == "Hero" then Hero = i end
+            end
         end
-        return nil
-    end)
-
-    if ok and result then
-        rolesRaw = result
-        BuildRoleMappings(rolesRaw)
     end
 
-    -- Ensure highlights exist then update them
     CreateHighlight()
     UpdateHighlights()
 end)
+
 
 
 -- // Auto gun pickup
