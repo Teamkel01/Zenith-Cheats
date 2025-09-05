@@ -1425,6 +1425,18 @@ local Toggle = GUI:Toggle({
 	end
 }, section)
 
+local Toggle = GUI:Toggle({
+	text = "Coin Esp",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			coinesp = false
+		else
+			coinesp = true
+		end
+	end
+}, section)
+
+
 local Tab = GUI:CreateTab({
 	Text = "Player",
 	icon = "rbxassetid://2790547157"
