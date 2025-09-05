@@ -1405,19 +1405,26 @@ local silentaim = false
 task.spawn(function()
 	while task.wait(0.1) do
 		if silentaim then
-		for _, v in pairs(game:GetService("Players"):GetChildren()) do
-		if v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
 
-		local args = {
-   		 [1] = 1,
-  		 [2] = Vector3.new(v.Character:FindFirstChild("HumanoidRootPart").Position),
-   		 [3] = "AH2"
-		}
-		game:GetService("Players").LocalPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
-					end
-				end
-			end
-		end
+for _, player in pairs(Players:GetPlayers()) do
+    if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
+            local args = {
+                1,
+                player.Character.HumanoidRootPart.Position,
+                "AH2"
+            }
+
+            if localPlayer.Character and localPlayer.Character:FindFirstChild("Gun") and localPlayer.Character.Gun:FindFirstChild("KnifeLocal") and localPlayer.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") then
+                localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+            end
+        end
+    end
+end
+end
+end
 end)
 
 
