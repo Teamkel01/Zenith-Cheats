@@ -117,7 +117,7 @@ function Library:Init(options)
 	if UIS.TouchEnabled then
 	
 	mobilegui.Name = "zenithmobile"
-	mobilegui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	mobilegui.Parent = coreGui
 	mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	mobilegui.ResetOnSpawn = false
 	mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Global
