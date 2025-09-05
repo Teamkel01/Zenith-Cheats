@@ -1252,16 +1252,16 @@ local innocentesp = false
 local roles
 
 function CreateHighlight()
-	for i, v in pairs(Players:GetChildren()) do
-		if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
+	for i, v in pairs(game:GetService("Players"):GetChildren()) do
+		if v ~= game:GetService("Players").LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
 			Instance.new("Highlight", v.Character)           
 		end
 	end
 end
 
 function UpdateHighlights()
-	for _, v in pairs(Players:GetChildren()) do
-		if v ~= LP and v.Character and v.Character:FindFirstChild("Highlight") then
+	for _, v in pairs(game:GetService("Players"):GetChildren()) do
+		if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
 			local Highlight = v.Character:FindFirstChild("Highlight")
 
 			if v.Name == Sheriff and IsAlive(v) then
@@ -1298,8 +1298,8 @@ function IsAlive(Player) -- Simple sexy function
 	end
 end
 
-RunService.RenderStepped:connect(function()
-	roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+game:GetService("RunService").RenderStepped:connect(function()
+	roles = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true):InvokeServer()
 	for i, v in pairs(roles) do
 		if v.Role == "Murderer" then
 			Murder = i
@@ -1393,17 +1393,6 @@ local Toggle = GUI:Toggle({
 			innocentesp = false
 		else
 			innocentesp = true
-		end
-	end
-}, section)
-
-local Toggle = GUI:Toggle({
-	text = "Gun Esp",
-	callback = function(ToggleActive)
-		if ToggleActive then
-			gunesp = false
-		else
-			gunesp = true
 		end
 	end
 }, section)
