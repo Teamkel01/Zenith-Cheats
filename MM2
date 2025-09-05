@@ -1414,8 +1414,9 @@ end)
 
 -- // Silent Aim (auto shoot)
 local silentaim = false
+
 task.spawn(function()
-    while task.wait(0.01) do
+    while task.wait(0.1) do
         if silentaim and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
                 if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
@@ -1448,19 +1449,24 @@ task.spawn(function()
     end
 end)
 
--- // Silent Knife
+
 local silentknife = false
 task.spawn(function()
 
-	local closest = nil
+	local closestDist = math.huge
+local closest = nil
 
     while task.wait(0.01) do
         if silentknife and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             if player.Character:FindFirstChild("Knife") then
-                for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
-                    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
-						if (enemy.Character.HumanoidRootPart.CFrame.Position - player.Character.HumanoidRootPart.CFrame).magnitude < closest then
-							closest = enemy
+
+for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
+    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+        local dist = (enemy.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
+        if dist < closestDist then
+            closestDist = dist
+            closest = enemy
+
                         player.Character.HumanoidRootPart.CFrame = enemy.Character.HumanoidRootPart.CFrame
                         local args = {"Slash"}
                         pcall(function()
@@ -1560,7 +1566,7 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Toggle = GUI:Toggle({
-	text = "Kill Aura",
+	text = "Auto Kill",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			silentknife = false
