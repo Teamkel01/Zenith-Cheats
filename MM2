@@ -1254,51 +1254,51 @@ task.spawn(function()
 		for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
 			if player.Character then
 
-				roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+				local roles = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true):InvokeServer()
 
 				for i, v in pairs(roles) do
 
-				if v.Role = "Dead" then return end
+					if v.Role == "Dead" then return end
 
-				if murdesp and v.Role == "Murderer" then
-					if not player.Character:FindFirstChild("MurderESP") then
-						local hl = Instance.new("Highlight")
-						hl.Name = "MurderESP"
-						hl.Parent = player.Character
-						hl.FillColor = Color3.fromRGB(255, 0, 0)
-						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+					if murdesp and v.Role == "Murderer" then
+						if not player.Character:FindFirstChild("MurderESP") then
+							local hl = Instance.new("Highlight")
+							hl.Name = "MurderESP"
+							hl.Parent = player.Character
+							hl.FillColor = Color3.fromRGB(255, 0, 0)
+							hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+						end
+					else
+						if player.Character:FindFirstChild("MurderESP") then
+							player.Character.MurderESP:Destroy()
+						end
 					end
-				else
-					if player.Character:FindFirstChild("MurderESP") then
-						player.Character.MurderESP:Destroy()
-					end
-				end
 
-				if sheriffesp and v.Role == "Sheriff" then
-					if not player.Character:FindFirstChild("SheriffESP") then
-						local hl = Instance.new("Highlight")
-						hl.Name = "SheriffESP"
-						hl.Parent = player.Character
-						hl.FillColor = Color3.fromRGB(0, 0, 255)
-						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+					if sheriffesp and v.Role == "Sheriff" then
+						if not player.Character:FindFirstChild("SheriffESP") then
+							local hl = Instance.new("Highlight")
+							hl.Name = "SheriffESP"
+							hl.Parent = player.Character
+							hl.FillColor = Color3.fromRGB(0, 0, 255)
+							hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+						end
+					else
+						if player.Character:FindFirstChild("SheriffESP") then
+							player.Character.SheriffESP:Destroy()
+						end
 					end
-				else
-					if player.Character:FindFirstChild("SheriffESP") then
-						player.Character.SheriffESP:Destroy()
-					end
-				end
 
-				if innocentesp and not v.Role == "Murderer" or v.Role == "Sheriff" then
-					if not player.Character:FindFirstChild("InnoESP") then
-						local hl = Instance.new("Highlight")
-						hl.Name = "InnoESP"
-						hl.Parent = player.Character
-						hl.FillColor = Color3.fromRGB(0, 255, 0)
-						hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-					end
-				else
-					if player.Character:FindFirstChild("InnoESP") then
-						player.Character.InnoESP:Destroy()
+					if innocentesp and not (v.Role == "Murderer" or v.Role == "Sheriff") then
+						if not player.Character:FindFirstChild("InnoESP") then
+							local hl = Instance.new("Highlight")
+							hl.Name = "InnoESP"
+							hl.Parent = player.Character
+							hl.FillColor = Color3.fromRGB(0, 255, 0)
+							hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+						end
+					else
+						if player.Character:FindFirstChild("InnoESP") then
+							player.Character.InnoESP:Destroy()
 						end
 					end
 				end
