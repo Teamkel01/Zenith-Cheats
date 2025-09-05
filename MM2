@@ -1473,17 +1473,17 @@ task.spawn(function()
     while task.wait(0.01) do
         if silentknife then
 			if localPlayer.character then
+				if localPlayer.character:FindFirstChild("Knife") then
             for _, player in pairs(Players:GetPlayers()) do
 				if player ~= localPlayer then
+					localPlayer.character:FindFirstChild("HumanoidRootPart").CFrame = player.Character:FindFirstChild("HumanoidRootPart").CFrame
+				local args = {
+   				 [1] = "Slash"
+				}
 
-			function getNil(name,class) for _,v in pairs(getnilinstances())do if v.ClassName==class and v.Name==name then return v;end end end
+				game:GetService("Players").LocalPlayer.Character.Knife.Stab:FireServer(unpack(args))
 
-			local args = {
-			    player.Character.HumanoidRootPart.CFrame,
-			    player.Character.HumanoidRootPart.Position
-			}
-
-			getNil("Knife", "Tool").Throw:FireServer(unpack(args))
+						end
 					end
 				end
 			end
@@ -1575,7 +1575,7 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Toggle = GUI:Toggle({
-	text = "Kill All",
+	text = "Kill Aura",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			silentknife = false
