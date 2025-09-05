@@ -1261,6 +1261,8 @@ function CreateHighlight()
 	end
 end
 
+
+
 function UpdateHighlights()
 	for _, v in pairs(game:GetService("Players"):GetChildren()) do
 		if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
@@ -1381,9 +1383,38 @@ task.spawn(function()
 		if coinesp then
 		for _, models in workspace:GetChildren() do
 			if models:FindFirstChild("CoinContainer") then
+				if models:FindFirstChild("CoinContainer"):FindFirstChild("Coin_Server"):FindFirstChild("CoinCham") then return end
+
+				local cc = instance.new("Part")
+				cc.size = Vector3.new(3,3,3)
+				cc.Name = "CoinCham"
+				cc.Parent = models:FindFirstChild("CoinContainer"):FindFirstChild("Coin_Server")
+
 				local hl = instance.new("Highlight")
 				hl.FillColor = Color3.fromRGB(255, 255, 0)
-				hl.Parent = models:FindFirstChild("CoinContainer"):FindFirstChild("Coin_Server"):FindFirstChild("CoinVisual")
+				hl.Parent = cc
+				end
+			end
+		end
+	end
+end)
+
+local silentaim = false
+
+task.spawn(function()
+	while task.wait(0.1) do
+		if silentaim then
+		for _, v in pairs(game:GetService("Players"):GetChildren()) do
+		if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
+		if v.Name == Murder and IsAlive(v) then
+
+		local args = {
+   		 [1] = 1,
+  		 [2] = Vector3.new(v.Character.HumanoidRootPart.Position),
+   		 [3] = "AH2"
+		}
+		game:GetService("Players").LocalPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+					end
 				end
 			end
 		end
@@ -1459,6 +1490,17 @@ local Tab = GUI:CreateTab({
 local section = GUI:Section({
 	text = "Player"
 }, Tab)
+
+local Toggle = GUI:Toggle({
+	text = "Silent Aim Murderer",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			silentaim = false
+		else
+			silentaim = true
+		end
+	end
+}, section)
 
 local Toggle = GUI:Toggle({
 	text = "Infinite Jump",
