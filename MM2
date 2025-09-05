@@ -109,48 +109,48 @@ function Library:Init(options)
 	blur.Parent = game.Lighting
 
 	zenith.Name = "zenith"
-	zenith.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	zenith.Parent = coreGui
 	zenith.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	zenith.ResetOnSpawn = false
 	zenith.ZIndexBehavior = Enum.ZIndexBehavior.Global
-
+	
 	if UIS.TouchEnabled then
-
-		mobilegui.Name = "zenithmobile"
-		mobilegui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-		mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-		mobilegui.ResetOnSpawn = false
-		mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Global
-
+	
+	mobilegui.Name = "zenithmobile"
+	mobilegui.Parent = coreGui
+	mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	mobilegui.ResetOnSpawn = false
+	mobilegui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	
 		uiScale.Scale = 0.6
 		uiScale.Parent = TopBar 
-
-		mobilebutton.Name = "mobilebutton"
-		mobilebutton.Parent = mobilegui
-		mobilebutton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		mobilebutton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		mobilebutton.BorderSizePixel = 0
-		mobilebutton.Position = UDim2.new(0.1, 0, 0.1, 0)
-		mobilebutton.Size = UDim2.new(0, 35, 0, 35)
-		mobilebutton.Font = Enum.Font.Ubuntu
-		mobilebutton.Text = "Z"
-		mobilebutton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		mobilebutton.TextSize = 35
-		mobilebutton.TextWrapped = true
-		mobilebutton.MouseButton1Down:Connect(function()
-			if blur.Size == 24 then
-				local tween = game:GetService("TweenService"):Create(blur, TweenInfo.new(0.5), {Size = 0})
-				tween:Play()
-				zenith.Enabled = false
-			else
-				local tween2 = game:GetService("TweenService"):Create(blur, TweenInfo.new(0.5), {Size = 24})
-				tween2:Play()
-				zenith.Enabled = true
-			end
-		end)
-
+	
+	mobilebutton.Name = "mobilebutton"
+	mobilebutton.Parent = mobilegui
+	mobilebutton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	mobilebutton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	mobilebutton.BorderSizePixel = 0
+	mobilebutton.Position = UDim2.new(0.1, 0, 0.1, 0)
+	mobilebutton.Size = UDim2.new(0, 35, 0, 35)
+	mobilebutton.Font = Enum.Font.Ubuntu
+	mobilebutton.Text = "Z"
+	mobilebutton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	mobilebutton.TextSize = 35
+	mobilebutton.TextWrapped = true
+	mobilebutton.MouseButton1Down:Connect(function()
+		if blur.Size == 24 then
+			local tween = game:GetService("TweenService"):Create(blur, TweenInfo.new(0.5), {Size = 0})
+			tween:Play()
+			zenith.Enabled = false
+		else
+			local tween2 = game:GetService("TweenService"):Create(blur, TweenInfo.new(0.5), {Size = 24})
+			tween2:Play()
+			zenith.Enabled = true
+		end
+	end)
+	
 	end
-
+	
 	UICorner420.Parent = mobilebutton
 
 	TopBar.Name = "TopBar"
@@ -1245,141 +1245,86 @@ end)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LP = Players.LocalPlayer
+local roles
+local innocentesp = false
 local murdesp = false
 local sheriffesp = false
-local innocentesp = false
-local roles
-local Murder, Sheriff, Hero
+-- > Functions <--
 
 function CreateHighlight()
-    for _, v in pairs(game:GetService("Players"):GetChildren()) do
-        if v ~= game:GetService("Players").LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
-            local hl = Instance.new("Highlight")
-            hl.Name = "Highlight"
-            hl.Parent = v.Character
-            hl.FillTransparency = 1
-            hl.OutlineTransparency = 1
-        end
-    end
-end
-
-function IsAlive(Player)
-    if not roles then return false end
-    for i, v in pairs(roles) do
-        if Player.Name == i then
-            return not v.Killed and not v.Dead
-        end
-    end
-    return false
+	for i, v in pairs(Players:GetChildren()) do
+		if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
+			Instance.new("Highlight", v.Character)           
+		end
+	end
 end
 
 function UpdateHighlights()
-    for _, v in pairs(game:GetService("Players"):GetChildren()) do
-        if v ~= game:GetService("Players").LocalPlayer and v.Character then
-            local Highlight = v.Character:FindFirstChild("Highlight")
-            if Highlight then
-                Highlight.FillTransparency = 1
-                Highlight.OutlineTransparency = 1
+	for _, v in pairs(Players:GetChildren()) do
+		if v ~= LP and v.Character and v.Character:FindFirstChild("Highlight") then
+			Highlight = v.Character:FindFirstChild("Highlight")
+			if sheriffesp and v.Name == Sheriff and IsAlive(v) then
+				Highlight.FillColor = Color3.fromRGB(0, 0, 225)
+			elseif murdesp and v.Name == Murder and IsAlive(v) then
+				Highlight.FillColor = Color3.fromRGB(225, 0, 0)
+			elseif sheriffesp and v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
+				Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+			elseif innocentesp then
+				Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+			end
+		end
+	end
+end	
 
-                if v.Name == Sheriff and IsAlive(v) and sheriffesp or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") then
-                    Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-                    Highlight.FillTransparency = 0
-                    Highlight.OutlineTransparency = 0
-                elseif v.Name == Murder and IsAlive(v) and murdesp or v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
-                    Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-                    Highlight.FillTransparency = 0
-                    Highlight.OutlineTransparency = 0
-                elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) and sheriffesp then
-                    Highlight.FillColor = Color3.fromRGB(255, 250, 0)
-                    Highlight.FillTransparency = 0
-                    Highlight.OutlineTransparency = 0
-                elseif innocentesp then
-                    Highlight.FillColor = Color3.fromRGB(0, 225, 0)
-                    Highlight.FillTransparency = 0
-                    Highlight.OutlineTransparency = 0
-                end
-            end
-        end
-    end
+
+function IsAlive(Player) -- Simple sexy function
+	for i, v in pairs(roles) do
+		if Player.Name == i then
+			if not v.Killed and not v.Dead then
+				return true
+			else
+				return false
+			end
+		end
+	end
 end
 
-local player = game.Players.LocalPlayer
-player.CharacterAdded:Connect(function(char)
-    char:WaitForChild("HumanoidRootPart")
-    char:WaitForChild("Humanoid")
-    CreateHighlight()
-end)
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    local getData = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true)
-    if getData then
-        roles = getData:InvokeServer()
-        Murder, Sheriff, Hero = nil, nil, nil
-        for i, v in pairs(roles) do
-            if v.Role == "Murderer" then
-                Murder = i
-            elseif v.Role == "Sheriff" then
-                Sheriff = i
-            elseif v.Role == "Hero" then
-                Hero = i
-            end
-        end
-    end
-    CreateHighlight()
-    UpdateHighlights()
+RunService.RenderStepped:connect(function()
+	roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+	for i, v in pairs(roles) do
+		if v.Role == "Murderer" then
+			Murder = i
+		elseif v.Role == 'Sheriff'then
+			Sheriff = i
+		elseif v.Role == 'Hero'then
+			Hero = i
+		end
+	end
+	CreateHighlight()
+	UpdateHighlights()
 end)
 
 
-
-
-
--- // Auto gun pickup
-local autogun = false
-task.spawn(function()
-    while task.wait(0.1) do
-		if not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Knife") or game:GetService("Players").LocalPlayer.Character:FindFirstChild("Knife") then
-        if autogun and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            for _, models in workspace:GetChildren() do
-                if models:FindFirstChild("GunDrop") then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp then
-                        local org = hrp.CFrame
-                        hrp.CFrame = models.GunDrop.CFrame
-                        task.wait(0.01)
-                        hrp.CFrame = org
-					end
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- // Infinite Jump
-local infjump = false
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if infjump and player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
-        player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-    end
-end)
-
--- // NoClip
-local noclip = false
-task.spawn(function()
-    while task.wait(0.01) do
-        local char = player.Character
-        if char then
-            for _, partName in pairs({"Head", "UpperTorso", "LowerTorso", "HumanoidRootPart"}) do
-                local part = char:FindFirstChild(partName)
-                if part then
-                    part.CanCollide = not noclip
-                end
-            end
-        end
-    end
-end)
-
--- // Coin ESP
 local coinesp = false
 task.spawn(function()
     while task.wait(0.1) do
@@ -1403,7 +1348,7 @@ task.spawn(function()
                             hl.FillColor = Color3.fromRGB(255, 255, 0)
                             hl.Adornee = cc
                             hl.Parent = cc
-                        end
+						end
                     end
                 end
             end
@@ -1411,21 +1356,59 @@ task.spawn(function()
     end
 end)
 
--- // Silent Aim (auto shoot)
+local infjump = false
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infjump and LP.Character and LP.Character:FindFirstChildOfClass("Humanoid") then
+        LP.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+
+local noclip = false
+runService.RenderStepped:Connect(function()
+        local char = LP.Character
+        if char then
+            for _, partName in pairs({"Head", "UpperTorso", "LowerTorso", "HumanoidRootPart"}) do
+                local part = char:FindFirstChild(partName)
+                if part then
+                    part.CanCollide = not noclip
+            end
+        end
+    end
+end)
+
+local autogun = false
+task.spawn(function()
+    while task.wait(0.1) do
+		if not LP.Backpack:FindFirstChild("Knife") or not LP.Character:FindFirstChild("Knife") then
+        if autogun then
+            for _, models in workspace:GetChildren() do
+                if models:FindFirstChild("GunDrop") then
+                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                        local org = hrp.CFrame
+                        hrp.CFrame = models.GunDrop.CFrame
+                        task.wait(0.01)
+                        hrp.CFrame = org
+                    end
+                end
+            end
+        end
+    end
+end)
+
 local silentaim = false
 
 task.spawn(function()
     while task.wait(0.1) do
-        if silentaim and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        if silentaim then
             for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
-                if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                if enemy ~= LP and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
                     if enemy.Backpack:FindFirstChild("Knife") or enemy.Character:FindFirstChild("Knife") then
-                        local startPos = player.Character.HumanoidRootPart.Position
+                        local startPos = LP.Character.HumanoidRootPart.Position
                         local endPos = enemy.Character.HumanoidRootPart.Position
                         local direction = (endPos - startPos).Unit * 500
                         
                         local raycastParams = RaycastParams.new()
-                        raycastParams.FilterDescendantsInstances = {player.Character}
+                        raycastParams.FilterDescendantsInstances = {LP.Character}
                         raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
                         
                         local result = workspace:Raycast(startPos, direction, raycastParams)
@@ -1433,11 +1416,11 @@ task.spawn(function()
                         if not result or result.Instance:IsDescendantOf(enemy.Character) then
                             local args = {1, endPos, "AH2"}
                             pcall(function()
-                                if player.Character:FindFirstChild("Gun") and
-                                   player.Character.Gun:FindFirstChild("KnifeLocal") and
-                                   player.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") and
-                                   player.Character.Gun.KnifeLocal.CreateBeam:FindFirstChild("RemoteFunction") then
-                                    player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+                                if LP.Character:FindFirstChild("Gun") and
+                                   LP.Character.Gun:FindFirstChild("KnifeLocal") and
+                                   LP.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") and
+                                   LP.Character.Gun.KnifeLocal.CreateBeam:FindFirstChild("RemoteFunction") then
+                                    LP.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
                                 end
                             end)
                         end
@@ -1448,47 +1431,7 @@ task.spawn(function()
     end
 end)
 
-
-local silentknife = false
-task.spawn(function()
-    while task.wait(0.01) do
-        if silentknife and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            if player.Character:FindFirstChild("Knife") then
-
-                local closestDist = math.huge -- reset each loop
-                local closest = nil
-
-                for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
-                    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
-                        local dist = (enemy.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
-                        if dist < closestDist then
-                            closestDist = dist
-                            closest = enemy
-                        end
-                    end
-                end
-
-                -- Do the attack if a target is found
-                if closest then
-                    player.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame
-                    local args = {"Slash"}
-                    pcall(function()
-                        if player.Character:FindFirstChild("Knife") and player.Character.Knife:FindFirstChild("Stab") then
-                            player.Character.Knife.Stab:FireServer(unpack(args))
-                        end
-                    end)
-                end
-            end
-        end
-    end
-end)
-
-
-
-
-
-
-local main = Library:Init { Title = "ZENITH | MM2" }
+local main = Library:Init { Title = "ZENITH" }
 
 local Tab = GUI:CreateTab({
 	Text = "Visuals",
@@ -1496,15 +1439,11 @@ local Tab = GUI:CreateTab({
 })
 
 local section = GUI:Section({
-	text = "Player"
-}, Tab)
-
-local section = GUI:Section({
 	text = "Esp"
 }, Tab)
 
 local Toggle = GUI:Toggle({
-	text = "Murder Esp",
+	text = "Murderer Esp",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			murdesp = false
@@ -1547,37 +1486,14 @@ local Toggle = GUI:Toggle({
 	end
 }, section)
 
-
 local Tab = GUI:CreateTab({
 	Text = "Player",
 	icon = "rbxassetid://2790547157"
 })
 
 local section = GUI:Section({
-	text = "Player"
+	text = "Movement"
 }, Tab)
-
-local Toggle = GUI:Toggle({
-	text = "Silent Aim",
-	callback = function(ToggleActive)
-		if ToggleActive then
-			silentaim = false
-		else
-			silentaim = true
-		end
-	end
-}, section)
-
-local Toggle = GUI:Toggle({
-	text = "Auto Kill",
-	callback = function(ToggleActive)
-		if ToggleActive then
-			silentknife = false
-		else
-			silentknife = true
-		end
-	end
-}, section)
 
 local Toggle = GUI:Toggle({
 	text = "Infinite Jump",
@@ -1601,30 +1517,19 @@ local Toggle = GUI:Toggle({
 	end
 }, section)
 
-local Slider = GUI:Slider({
-	text = "WalkSpeed",
-	min = 16,
-	max = 40,
-	default = 16,
-	callback = function(value)
-		local humanoid = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-		if humanoid then
-			humanoid.WalkSpeed = value
+local Toggle = GUI:Toggle({
+	text = "Auto Shoot",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			silentaim = false
+		else
+			silentaim = true
 		end
 	end
 }, section)
 
-local Tab = GUI:CreateTab({
-	Text = "Auto",
-	icon = "rbxassetid://2790547157"
-})
-
-local section = GUI:Section({
-	text = "Auto"
-}, Tab)
-
 local Toggle = GUI:Toggle({
-	text = "Auto Gun",
+	text = "Gun Grabber",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			autogun = false
@@ -1635,34 +1540,31 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Tab = GUI:CreateTab({
-	Text = "Buttons",
+	Text = "Teleports",
 	icon = "rbxassetid://2790547157"
 })
 
 local section = GUI:Section({
-	text = "Innocent"
+	text = "Players"
 }, Tab)
 
 local button1 = GUI:Button({
-	text = "Grab Gun",
+	text = "Murderer",
 	Callback = function()
-		for _, models in workspace:GetChildren() do
-			if models:FindFirstChild("GunDrop") then
-				local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
-				task.wait(0.1)
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
+		for _, plrs in game:GetService("players"):GetPlayers() do
+			if plrs.Backpack:FindFirstChild("Knife") or plrs.Character:FindFirstChild("Knife") then
+				LP.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
 			end
 		end
 	end,
 }, section)
 
 local button1 = GUI:Button({
-	text = "Teleport Murderer",
+	text = "Sheriff",
 	Callback = function()
 		for _, plrs in game:GetService("players"):GetPlayers() do
-			if plrs.Backpack:FindFirstChild("Knife") or plrs.Character:FindFirstChild("Knife") then
-				game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame =  plrs.Character:FindFirstChild("HumanoidRootPart").CFrame
+			if plrs.Backpack:FindFirstChild("Gun") or plrs.Character:FindFirstChild("Gun") then
+				LP.Character.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
 			end
 		end
 	end,
