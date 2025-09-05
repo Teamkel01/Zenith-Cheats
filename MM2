@@ -1361,7 +1361,7 @@ end)
 local noclip = false
 
 task.spawn(function()
-	while task.wait(0.1) do
+	while task.wait(0.01) do
 		if noclip then
 			game:GetService("Players").LocalPlayer.Character:FindFirstChild("Head").CanCollide = false
 			game:GetService("Players").LocalPlayer.Character:FindFirstChild("UpperTorso").CanCollide = false
@@ -1383,7 +1383,7 @@ task.spawn(function()
 		if coinesp then
 		for _, models in workspace:GetChildren() do
 			if models:FindFirstChild("CoinContainer") then
-				if models:FindFirstChild("CoinContainer"):FindFirstChild("Coin_Server"):FindFirstChild("CoinCham") then return end
+				if not models:FindFirstChild("CoinContainer"):FindFirstChild("Coin_Server"):FindFirstChild("CoinCham") then
 
 				local cc = instance.new("Part")
 				cc.size = Vector3.new(3,3,3)
@@ -1393,6 +1393,7 @@ task.spawn(function()
 				local hl = instance.new("Highlight")
 				hl.FillColor = Color3.fromRGB(255, 255, 0)
 				hl.Parent = cc
+					end
 				end
 			end
 		end
@@ -1405,12 +1406,11 @@ task.spawn(function()
 	while task.wait(0.1) do
 		if silentaim then
 		for _, v in pairs(game:GetService("Players"):GetChildren()) do
-		if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
-		if v.Name == Murder and IsAlive(v) then
+		if v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
 
 		local args = {
    		 [1] = 1,
-  		 [2] = Vector3.new(v.Character.HumanoidRootPart.Position),
+  		 [2] = Vector3.new(v.Character:FindFirstChild("HumanoidRootPart").Position),
    		 [3] = "AH2"
 		}
 		game:GetService("Players").LocalPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
@@ -1418,7 +1418,6 @@ task.spawn(function()
 				end
 			end
 		end
-	end
 end)
 
 
