@@ -1256,6 +1256,7 @@ function CreateHighlight()
 		if v ~= game:GetService("Players").LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
 			local hl = Instance.new("Highlight", v.Character)
 			hl.FillTransparency = 1
+			hl.OutlineTransparency = 1
 		end
 	end
 end
@@ -1269,24 +1270,28 @@ function UpdateHighlights()
 					local Highlight = v.Character:FindFirstChild("Highlight")
 					Highlight.FillColor = Color3.fromRGB(0, 0, 225)
 					Highlight.FillTransparency = 0
+					Highlight.OutlineTransparency = 0
 				end
 			elseif v.Name == Murder and IsAlive(v) then
 				if murdesp then
 					local Highlight = v.Character:FindFirstChild("Highlight")
 					Highlight.FillColor = Color3.fromRGB(225, 0, 0)
 					Highlight.FillTransparency = 0
+					Highlight.OutlineTransparency = 0
 				end
 			elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
 				if sheriffesp then
 					local Highlight = v.Character:FindFirstChild("Highlight")
 					Highlight.FillColor = Color3.fromRGB(255, 250, 0)
 					Highlight.FillTransparency = 0
+					Highlight.OutlineTransparency = 0
 				end
 			else
 				if innocentesp then
 					local Highlight = v.Character:FindFirstChild("Highlight")
 					Highlight.FillColor = Color3.fromRGB(0, 225, 0)
 					Highlight.FillTransparency = 0
+					Highlight.OutlineTransparency = 0
 				end
 			end
 		end
