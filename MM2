@@ -1251,129 +1251,120 @@ local sheriffesp = false
 local innocentesp = false
 
 local roles
-
-function CreateHighlight()
-	for i, v in pairs(game:GetService("Players"):GetChildren()) do
-		if v ~= game:GetService("Players").LocalPlayer and v.Character and not v.Character:FindFirstChild("Highlight") then
-			local hl = Instance.new("Highlight", v.Character)
-			hl.FillTransparency = 1
-			hl.OutlineTransparency = 1
-		end
-	end
-end
-
-
-
-function UpdateHighlights()
-	for _, v in pairs(game:GetService("Players"):GetChildren()) do
-		if v ~= game:GetService("Players").LocalPlayer and v.Character and v.Character:FindFirstChild("Highlight") then
-
-			if v.Name == Sheriff and IsAlive(v) then
-				if sheriffesp then
-					local Highlight = v.Character:FindFirstChild("Highlight")
-					Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-					Highlight.FillTransparency = 0
-					Highlight.OutlineTransparency = 0
-				end
-			elseif v.Name == Murder and IsAlive(v) then
-				if murdesp then
-					local Highlight = v.Character:FindFirstChild("Highlight")
-					Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-					Highlight.FillTransparency = 0
-					Highlight.OutlineTransparency = 0
-				end
-			elseif v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
-				if sheriffesp then
-					local Highlight = v.Character:FindFirstChild("Highlight")
-					Highlight.FillColor = Color3.fromRGB(255, 250, 0)
-					Highlight.FillTransparency = 0
-					Highlight.OutlineTransparency = 0
-				end
-			else
-				if innocentesp then
-					local Highlight = v.Character:FindFirstChild("Highlight")
-					Highlight.FillColor = Color3.fromRGB(0, 225, 0)
-					Highlight.FillTransparency = 0
-					Highlight.OutlineTransparency = 0
-				end
-			end
-		end
-	end
-end
-
-
-function IsAlive(Player)
-	for i, v in pairs(roles) do
-		if Player.Name == i then
-			if not v.Killed and not v.Dead then
-				return true
-			else
-				return false
-			end
-		end
-	end
-end
-
+local Murder, Sheriff, Hero
 local player = game.Players.LocalPlayer
-
-player.CharacterAdded:Connect(function(char)
-    -- Wait for character parts to load
-    char:WaitForChild("HumanoidRootPart")
-    char:WaitForChild("Humanoid")
-    CreateHighlight() -- recreate highlights for the new character
-end)
-
-game:GetService("RunService").RenderStepped:connect(function()
-	roles = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true):InvokeServer()
-	for i, v in pairs(roles) do
-
-		if v.Role == "Murderer" then
-			Murder = i
-		elseif v.Role == 'Sheriff'then
-			Sheriff = i
-		elseif v.Role == 'Hero'then
-			Hero = i
-		end
-	end
-	CreateHighlight()
-	UpdateHighlights()
-end)
-
-local autogun = false
-
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
 local workspace = game:GetService("Workspace")
 
+-- // Create Highlights
+function CreateHighlight()
+    for _, v in pairs(game:GetService("Players"):GetChildren()) do
+        if v ~= player and v.Character and not v.Character:FindFirstChild("Highlight") then
+            local hl = Instance.new("Highlight")
+            hl.Parent = v.Character
+            hl.FillTransparency = 1
+            hl.OutlineTransparency = 1
+        end
+    end
+end
+
+-- // Check if player is alive
+function IsAlive(Player)
+    if not roles then return false end
+    for name, data in pairs(roles) do
+        if Player.Name == name then
+            return not (data.Killed or data.Dead)
+        end
+    end
+    return false
+end
+
+-- // Update Highlights safely
+function UpdateHighlights()
+    for _, v in pairs(game:GetService("Players"):GetChildren()) do
+        if v ~= player and v.Character and v.Character:FindFirstChild("Highlight") then
+            local Highlight = v.Character:FindFirstChild("Highlight")
+            if not Highlight then
+
+            if v.Name == Sheriff and IsAlive(v) and sheriffesp then
+                Highlight.FillColor = Color3.fromRGB(0, 0, 225)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif v.Name == Murder and IsAlive(v) and murdesp then
+                Highlight.FillColor = Color3.fromRGB(225, 0, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif v.Name == Hero and IsAlive(v) and Sheriff and game.Players:FindFirstChild(Sheriff) and not IsAlive(game.Players[Sheriff]) and sheriffesp then
+                Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            elseif innocentesp then
+                Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+                Highlight.FillTransparency = 0
+                Highlight.OutlineTransparency = 0
+            end
+        end
+    end
+end
+end
+
+-- // Recreate highlights on respawn
+player.CharacterAdded:Connect(function(char)
+    char:WaitForChild("HumanoidRootPart")
+    char:WaitForChild("Humanoid")
+    CreateHighlight()
+end)
+
+-- // Update roles + ESP every frame
+game:GetService("RunService").RenderStepped:Connect(function()
+    local remote = game:GetService("ReplicatedStorage"):FindFirstChild("GetPlayerData", true)
+    if remote then
+        roles = remote:InvokeServer()
+        if roles then
+            for i, v in pairs(roles) do
+                if v.Role == "Murderer" then Murder = i end
+                if v.Role == "Sheriff" then Sheriff = i end
+                if v.Role == "Hero" then Hero = i end
+            end
+        end
+    end
+    CreateHighlight()
+    UpdateHighlights()
+end)
+
+-- // Auto gun pickup
+local autogun = false
 task.spawn(function()
-	while task.wait(0.1) do
-		if autogun then
-			for _, models in workspace:GetChildren() do
-				if models:FindFirstChild("GunDrop") then
-					local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
-					task.wait(0.1)
-					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
-				end
-			end
-		end
-	end
+    while task.wait(0.1) do
+        if autogun and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            for _, models in workspace:GetChildren() do
+                if models:FindFirstChild("GunDrop") then
+                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        local org = hrp.CFrame
+                        hrp.CFrame = models.GunDrop.CFrame
+                        task.wait(0.1)
+                        hrp.CFrame = org
+                    end
+                end
+            end
+        end
+    end
 end)
 
+-- // Infinite Jump
 local infjump = false
-
-game:GetService("UserInputService").JumpRequest:connect(function()
-	if infjump then
-		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-	end
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if infjump and player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+        player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
 end)
 
+-- // NoClip
 local noclip = false
-
 task.spawn(function()
     while task.wait(0.01) do
         local char = player.Character
-        if char and char:FindFirstChild("Head") then
+        if char then
             for _, partName in pairs({"Head", "UpperTorso", "LowerTorso", "HumanoidRootPart"}) do
                 local part = char:FindFirstChild(partName)
                 if part then
@@ -1384,78 +1375,31 @@ task.spawn(function()
     end
 end)
 
-
+-- // Coin ESP
 local coinesp = false
-
 task.spawn(function()
     while task.wait(0.1) do
-        pcall(function()
-            if coinesp then
-                for _, model in pairs(workspace:GetChildren()) do
-                    local coinContainer = model:FindFirstChild("CoinContainer")
-                    if coinContainer then
-                        for _, coinServer in pairs(coinContainer:GetChildren()) do
-                            if coinServer.Name == "Coin_Server" and not coinServer:FindFirstChild("CoinCham") then
-                                local cc = Instance.new("Part")
-                                cc.Size = Vector3.new(2, 2, 2)
-                                cc.Position = coinServer.Position
-                                cc.Name = "CoinCham"
-                                cc.Anchored = true
-                                cc.CanCollide = false
-                                cc.Transparency = 0
-                                cc.Parent = coinServer
-                                cc.Color = Color3.fromRGB(255, 255, 0)
+        if coinesp then
+            for _, model in pairs(workspace:GetChildren()) do
+                local coinContainer = model:FindFirstChild("CoinContainer")
+                if coinContainer then
+                    for _, coinServer in pairs(coinContainer:GetChildren()) do
+                        if coinServer.Name == "Coin_Server" and not coinServer:FindFirstChild("CoinCham") then
+                            local cc = Instance.new("Part")
+                            cc.Size = Vector3.new(2, 2, 2)
+                            cc.Position = coinServer.Position
+                            cc.Name = "CoinCham"
+                            cc.Anchored = true
+                            cc.CanCollide = false
+                            cc.Transparency = 0
+                            cc.Parent = coinServer
+                            cc.Color = Color3.fromRGB(255, 255, 0)
 
-                                local hl = Instance.new("Highlight")
-                                hl.FillColor = Color3.fromRGB(255, 255, 0)
-                                hl.Adornee = cc
-                                hl.Parent = cc
-                            end
+                            local hl = Instance.new("Highlight")
+                            hl.FillColor = Color3.fromRGB(255, 255, 0)
+                            hl.Adornee = cc
+                            hl.Parent = cc
                         end
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-
-
-
-local silentaim = false
-
-task.spawn(function()
-    local Players = game:GetService("Players")
-    local localPlayer = Players.LocalPlayer
-    local RunService = game:GetService("RunService")
-    
-    while task.wait(0.01) do
-        if silentaim then
-			if localPlayer.Character then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
-                        
-                        local startPos = localPlayer.Character.HumanoidRootPart.Position
-                        local endPos = player.Character.HumanoidRootPart.Position
-                        local direction = endPos - startPos
-                        
-                        local raycastParams = RaycastParams.new()
-                        raycastParams.FilterDescendantsInstances = {localPlayer.Character}
-                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                        
-                        local result = workspace:Raycast(startPos, direction, raycastParams)
-
-                        if not result or result.Instance:IsDescendantOf(player.Character) then
-                            local args = {
-                                1,
-                                player.Character.HumanoidRootPart.Position,
-                                "AH2"
-                            }
-                            
-                                localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
-                        end
-					end
                     end
                 end
             end
@@ -1463,31 +1407,61 @@ task.spawn(function()
     end
 end)
 
-local silentknife = false
-
+-- // Silent Aim (auto shoot)
+local silentaim = false
 task.spawn(function()
-    local Players = game:GetService("Players")
-    local localPlayer = Players.LocalPlayer
-    local RunService = game:GetService("RunService")
-    
     while task.wait(0.01) do
-        if silentknife then
-			if localPlayer.character then
-				if localPlayer.character:FindFirstChild("Knife") then
-            for _, player in pairs(Players:GetPlayers()) do
-				if player ~= localPlayer then
-					localPlayer.character:FindFirstChild("HumanoidRootPart").CFrame = player.Character:FindFirstChild("HumanoidRootPart").CFrame
-				local args = {
-   				 [1] = "Slash"
-				}
+        if silentaim and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
+                if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                    if enemy.Backpack:FindFirstChild("Knife") or enemy.Character:FindFirstChild("Knife") then
+                        local startPos = player.Character.HumanoidRootPart.Position
+                        local endPos = enemy.Character.HumanoidRootPart.Position
+                        local direction = (endPos - startPos).Unit * 500
+                        
+                        local raycastParams = RaycastParams.new()
+                        raycastParams.FilterDescendantsInstances = {player.Character}
+                        raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+                        
+                        local result = workspace:Raycast(startPos, direction, raycastParams)
 
-				game:GetService("Players").LocalPlayer.Character.Knife.Stab:FireServer(unpack(args))
+                        if not result or result.Instance:IsDescendantOf(enemy.Character) then
+                            local args = {1, endPos, "AH2"}
+                            pcall(function()
+                                if player.Character:FindFirstChild("Gun") and
+                                   player.Character.Gun:FindFirstChild("KnifeLocal") and
+                                   player.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") and
+                                   player.Character.Gun.KnifeLocal.CreateBeam:FindFirstChild("RemoteFunction") then
+                                    player.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
+                                end
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
 
-						end
-					end
-				end
-			end
-		end
+-- // Silent Knife
+local silentknife = false
+task.spawn(function()
+    while task.wait(0.01) do
+        if silentknife and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            if player.Character:FindFirstChild("Knife") then
+                for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
+                    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                        player.Character.HumanoidRootPart.CFrame = enemy.Character.HumanoidRootPart.CFrame
+                        local args = {"Slash"}
+                        pcall(function()
+                            if player.Character:FindFirstChild("Knife") and player.Character.Knife:FindFirstChild("Stab") then
+                                player.Character.Knife.Stab:FireServer(unpack(args))
+                            end
+                        end)
+                    end
+                end
+            end
+        end
     end
 end)
 
