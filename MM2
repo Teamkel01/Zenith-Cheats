@@ -1553,7 +1553,7 @@ local button1 = GUI:Button({
 	Callback = function()
 		for _, plrs in game:GetService("players"):GetPlayers() do
 			if plrs.Backpack:FindFirstChild("Knife") or plrs.Character:FindFirstChild("Knife") then
-				LP.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
+				LP.Character.HumanoidRootPart.CFrame = plrs.Character.HumanoidRootPart.CFrame
 			end
 		end
 	end,
