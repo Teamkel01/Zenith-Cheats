@@ -1391,7 +1391,7 @@ task.spawn(function()
 						cc.Name = "CoinCham"
 						cc.Anchored = true
 						cc.CanCollide = false
-						cc.Transparency = 1
+						cc.Transparency = 0
 						cc.Parent = coinServer
 
 						local hl = Instance.new("Highlight")
@@ -1413,7 +1413,7 @@ task.spawn(function()
     local localPlayer = Players.LocalPlayer
     local RunService = game:GetService("RunService")
     
-    while task.wait(0.1) do
+    while task.wait(0.01) do
         if silentaim then
             for _, player in pairs(Players:GetPlayers()) do
                 if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
