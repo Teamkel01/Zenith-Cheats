@@ -1392,8 +1392,9 @@ task.spawn(function()
 							cc.Name = "CoinCham"
 							cc.Anchored = true
 							cc.CanCollide = false
-							cc.Transparency = 0
+							cc.Transparency = 0.5
 							cc.Parent = coinServer
+							cc.Color = Color3.fromRGB(255, 255, 0)
 
 							local hl = Instance.new("Highlight")
 							hl.FillColor = Color3.fromRGB(255, 255, 0)
