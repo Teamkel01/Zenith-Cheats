@@ -109,7 +109,7 @@ function Library:Init(options)
 	blur.Parent = game.Lighting
 
 	zenith.Name = "zenith"
-	zenith.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	zenith.Parent = coreGui
 	zenith.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	zenith.ResetOnSpawn = false
 	zenith.ZIndexBehavior = Enum.ZIndexBehavior.Global
