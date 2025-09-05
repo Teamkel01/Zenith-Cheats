@@ -1451,35 +1451,39 @@ end)
 
 local silentknife = false
 task.spawn(function()
-
-	local closestDist = math.huge
-local closest = nil
-
     while task.wait(0.01) do
         if silentknife and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             if player.Character:FindFirstChild("Knife") then
 
-for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
-    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
-        local dist = (enemy.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
-        if dist < closestDist then
-            closestDist = dist
-            closest = enemy
+                local closestDist = math.huge -- reset each loop
+                local closest = nil
 
-                        player.Character.HumanoidRootPart.CFrame = enemy.Character.HumanoidRootPart.CFrame
-                        local args = {"Slash"}
-                        pcall(function()
-                            if player.Character:FindFirstChild("Knife") and player.Character.Knife:FindFirstChild("Stab") then
-                                player.Character.Knife.Stab:FireServer(unpack(args))
-							end
-                            end)
+                for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
+                    if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+                        local dist = (enemy.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).magnitude
+                        if dist < closestDist then
+                            closestDist = dist
+                            closest = enemy
                         end
                     end
+                end
+
+                -- Do the attack if a target is found
+                if closest then
+                    player.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame
+                    local args = {"Slash"}
+                    pcall(function()
+                        if player.Character:FindFirstChild("Knife") and player.Character.Knife:FindFirstChild("Stab") then
+                            player.Character.Knife.Stab:FireServer(unpack(args))
+                        end
+                    end)
                 end
             end
         end
     end
 end)
+
+
 
 
 
