@@ -1384,27 +1384,29 @@ task.spawn(function()
 			for _, model in pairs(workspace:GetChildren()) do
 				local coinContainer = model:FindFirstChild("CoinContainer")
 				if coinContainer then
-					local coinServer = coinContainer:FindFirstChild("Coin_Server")
-					if coinServer and not coinServer:FindFirstChild("CoinCham") then
-						local cc = Instance.new("Part")
-						cc.Size = Vector3.new(3, 3, 3)
-						cc.Position = coinServer.Position
-						cc.Name = "CoinCham"
-						cc.Anchored = true
-						cc.CanCollide = false
-						cc.Transparency = 0
-						cc.Parent = coinServer
+					for _, coinServer in pairs(coinContainer:GetChildren()) do
+						if coinServer.Name == "Coin_Server" and not coinServer:FindFirstChild("CoinCham") then
+							local cc = Instance.new("Part")
+							cc.Size = Vector3.new(2, 2, 2)
+							cc.Position = coinServer.Position
+							cc.Name = "CoinCham"
+							cc.Anchored = true
+							cc.CanCollide = false
+							cc.Transparency = 0
+							cc.Parent = coinServer
 
-						local hl = Instance.new("Highlight")
-						hl.FillColor = Color3.fromRGB(255, 255, 0)
-						hl.Adornee = cc
-						hl.Parent = cc
+							local hl = Instance.new("Highlight")
+							hl.FillColor = Color3.fromRGB(255, 255, 0)
+							hl.Adornee = cc
+							hl.Parent = cc
+						end
 					end
 				end
 			end
 		end
 	end
 end)
+
 
 
 local silentaim = false
