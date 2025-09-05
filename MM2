@@ -1451,18 +1451,24 @@ end)
 -- // Silent Knife
 local silentknife = false
 task.spawn(function()
+
+	local closest = nil
+
     while task.wait(0.01) do
         if silentknife and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             if player.Character:FindFirstChild("Knife") then
                 for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
                     if enemy ~= player and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
+						if (enemy.Character.HumanoidRootPart.CFrame.Position - player.Character.HumanoidRootPart.CFrame).magnitude < closest then
+							closest = enemy
                         player.Character.HumanoidRootPart.CFrame = enemy.Character.HumanoidRootPart.CFrame
                         local args = {"Slash"}
                         pcall(function()
                             if player.Character:FindFirstChild("Knife") and player.Character.Knife:FindFirstChild("Stab") then
                                 player.Character.Knife.Stab:FireServer(unpack(args))
-                            end
-                        end)
+							end
+                            end)
+                        end
                     end
                 end
             end
