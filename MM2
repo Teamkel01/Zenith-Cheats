@@ -1332,23 +1332,23 @@ end)
 local autogun = false
 
 local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
-local autogun = true
+local player = Players.LocalPlayer
+local workspace = game:GetService("Workspace")
 
-if autogun then
-    workspace.ChildAdded:Connect(function(child)
-        if child:FindFirstChild("GunDrop") then
-            local hrp = localPlayer.Character and localPlayer.Character:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                local originalCFrame = hrp.CFrame
-                hrp.CFrame = child.GunDrop.CFrame -- move to the gun
-                task.wait(0.1) -- small wait to register pickup
-                hrp.CFrame = originalCFrame -- return to original position
-            end
-        end
-    end)
-end
-
+task.spawn(function()
+	while task.wait(0.01) do
+		if autogun then
+			for _, models in workspace:GetChildren() do
+				if models:FindFirstChild("GunDrop") then
+					local org = game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
+					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = models:FindFirstChild("GunDrop").CFrame
+					task.wait(0.1)
+					game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame = org
+				end
+			end
+		end
+	end
+end)
 
 local infjump = false
 
