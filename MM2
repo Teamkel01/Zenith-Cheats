@@ -1249,7 +1249,7 @@ local murdesp = false
 local sheriffesp = false
 local innocentesp = false
 local roles
-local Murder, Sheriff, Hero -- define these so they exist
+local Murder, Sheriff, Hero
 
 function CreateHighlight()
     for _, v in pairs(game:GetService("Players"):GetChildren()) do
@@ -1281,11 +1281,11 @@ function UpdateHighlights()
                 Highlight.FillTransparency = 1
                 Highlight.OutlineTransparency = 1
 
-                if v.Name == Sheriff and IsAlive(v) and sheriffesp then
+                if v.Name == Sheriff and IsAlive(v) and sheriffesp or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") then
                     Highlight.FillColor = Color3.fromRGB(0, 0, 225)
                     Highlight.FillTransparency = 0
                     Highlight.OutlineTransparency = 0
-                elseif v.Name == Murder and IsAlive(v) and murdesp then
+                elseif v.Name == Murder and IsAlive(v) and murdesp or v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") then
                     Highlight.FillColor = Color3.fromRGB(225, 0, 0)
                     Highlight.FillTransparency = 0
                     Highlight.OutlineTransparency = 0
