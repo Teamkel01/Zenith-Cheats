@@ -1336,7 +1336,7 @@ local player = Players.LocalPlayer
 local workspace = game:GetService("Workspace")
 
 task.spawn(function()
-	while task.wait(0.01) do
+	while task.wait(0.1) do
 		if autogun then
 			for _, models in workspace:GetChildren() do
 				if models:FindFirstChild("GunDrop") then
@@ -1379,34 +1379,37 @@ end)
 local coinesp = false
 
 task.spawn(function()
-	while task.wait(0.1) do
-		if coinesp then
-			for _, model in pairs(workspace:GetChildren()) do
-				local coinContainer = model:FindFirstChild("CoinContainer")
-				if coinContainer then
-					for _, coinServer in pairs(coinContainer:GetChildren()) do
-						if coinServer.Name == "Coin_Server" and not coinServer:FindFirstChild("CoinCham") then
-							local cc = Instance.new("Part")
-							cc.Size = Vector3.new(2, 2, 2)
-							cc.Position = coinServer.Position
-							cc.Name = "CoinCham"
-							cc.Anchored = true
-							cc.CanCollide = false
-							cc.Transparency = 0
-							cc.Parent = coinServer
-							cc.Color = Color3.fromRGB(255, 255, 0)
+    while task.wait(0.1) do
+        pcall(function()
+            if coinesp then
+                for _, model in pairs(workspace:GetChildren()) do
+                    local coinContainer = model:FindFirstChild("CoinContainer")
+                    if coinContainer then
+                        for _, coinServer in pairs(coinContainer:GetChildren()) do
+                            if coinServer.Name == "Coin_Server" and not coinServer:FindFirstChild("CoinCham") then
+                                local cc = Instance.new("Part")
+                                cc.Size = Vector3.new(2, 2, 2)
+                                cc.Position = coinServer.Position
+                                cc.Name = "CoinCham"
+                                cc.Anchored = true
+                                cc.CanCollide = false
+                                cc.Transparency = 0
+                                cc.Parent = coinServer
+                                cc.Color = Color3.fromRGB(255, 255, 0)
 
-							local hl = Instance.new("Highlight")
-							hl.FillColor = Color3.fromRGB(255, 255, 0)
-							hl.Adornee = cc
-							hl.Parent = cc
-						end
-					end
-				end
-			end
-		end
-	end
+                                local hl = Instance.new("Highlight")
+                                hl.FillColor = Color3.fromRGB(255, 255, 0)
+                                hl.Adornee = cc
+                                hl.Parent = cc
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
 end)
+
 
 
 
