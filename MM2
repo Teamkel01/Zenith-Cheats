@@ -1431,6 +1431,7 @@ task.spawn(function()
     
     while task.wait(0.01) do
         if silentaim then
+			if localPlayer.Character then
             for _, player in pairs(Players:GetPlayers()) do
                 if player ~= localPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
                     if player.Backpack:FindFirstChild("Knife") or player.Character:FindFirstChild("Knife") then
@@ -1454,7 +1455,7 @@ task.spawn(function()
                             
                                 localPlayer.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
                         end
-                        
+					end
                     end
                 end
             end
@@ -1471,6 +1472,7 @@ task.spawn(function()
     
     while task.wait(0.01) do
         if silentknife then
+			if localPlayer.character then
             for _, player in pairs(Players:GetPlayers()) do
 				if player ~= localPlayer then
 
@@ -1482,6 +1484,7 @@ task.spawn(function()
 			}
 
 			getNil("Knife", "Tool").Throw:FireServer(unpack(args))
+					end
 				end
 			end
 		end
