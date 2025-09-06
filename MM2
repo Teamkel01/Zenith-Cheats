@@ -1269,12 +1269,19 @@ local roles
 local innocentesp = false
 local murdesp = false
 local sheriffesp = false
--- > Functions <--
+
+
+local function getRoot()
+    if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+        return LP.Character.HumanoidRootPart
+    end
+    return nil
+end
 
 function CreateHighlight()
 	for i, v in pairs(Players:GetChildren()) do
 		if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
-			Instance.new("Highlight", v.Character)           
+			Instance.new("Highlight", v.Character)
 		end
 	end
 end
@@ -1379,11 +1386,11 @@ end)
 local autogun = false
 task.spawn(function()
     while task.wait(0.1) do
-		if not LP.Backpack:FindFirstChild("Knife") or LP.Character:FindFirstChild("Knife") then
-        if autogun then
-            for _, models in workspace:GetChildren() do
-                if models:FindFirstChild("GunDrop") then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+        pcall(function()
+            if autogun and LP.Character and (not LP.Backpack:FindFirstChild("Knife") and not LP.Character:FindFirstChild("Knife")) then
+                for _, models in pairs(workspace:GetChildren()) do
+                    if models:FindFirstChild("GunDrop") and LP.Character:FindFirstChild("HumanoidRootPart") then
+                        local hrp = LP.Character.HumanoidRootPart
                         local org = hrp.CFrame
                         hrp.CFrame = models.GunDrop.CFrame
                         task.wait(0.01)
@@ -1391,38 +1398,38 @@ task.spawn(function()
                     end
                 end
             end
-        end
+        end)
     end
 end)
 
 local silentaim = false
+local Players = game:GetService("Players")
 
 task.spawn(function()
     while task.wait(0.1) do
-        if silentaim then
-            for _, enemy in pairs(game:GetService("Players"):GetPlayers()) do
+        if silentaim and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
+            for _, enemy in pairs(Players:GetPlayers()) do
                 if enemy ~= LP and enemy.Character and enemy.Character:FindFirstChild("HumanoidRootPart") then
                     if enemy.Backpack:FindFirstChild("Knife") or enemy.Character:FindFirstChild("Knife") then
                         local startPos = LP.Character.HumanoidRootPart.Position
                         local endPos = enemy.Character.HumanoidRootPart.Position
                         local direction = (endPos - startPos).Unit * 500
-                        
+
                         local raycastParams = RaycastParams.new()
                         raycastParams.FilterDescendantsInstances = {LP.Character}
                         raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-                        
+
                         local result = workspace:Raycast(startPos, direction, raycastParams)
 
-                        if not result or result.Instance:IsDescendantOf(enemy.Character) then
-                            local args = {1, endPos, "AH2"}
-                            pcall(function()
-                                if LP.Character:FindFirstChild("Gun") and
-                                   LP.Character.Gun:FindFirstChild("KnifeLocal") and
-                                   LP.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") and
-                                   LP.Character.Gun.KnifeLocal.CreateBeam:FindFirstChild("RemoteFunction") then
-                                    LP.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(unpack(args))
-                                end
-                            end)
+                        if not result or (result.Instance and result.Instance:IsDescendantOf(enemy.Character)) then
+                            if LP.Character:FindFirstChild("Gun") and
+                               LP.Character.Gun:FindFirstChild("KnifeLocal") and
+                               LP.Character.Gun.KnifeLocal:FindFirstChild("CreateBeam") and
+                               LP.Character.Gun.KnifeLocal.CreateBeam:FindFirstChild("RemoteFunction") then
+                                pcall(function()
+                                    LP.Character.Gun.KnifeLocal.CreateBeam.RemoteFunction:InvokeServer(1, endPos, "AH2")
+                                end)
+                            end
                         end
                     end
                 end
@@ -1431,14 +1438,41 @@ task.spawn(function()
     end
 end)
 
+local killaura = false
+
+task.spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if killaura and LP.Character and (LP.Backpack:FindFirstChild("Knife") or LP.Character:FindFirstChild("Knife")) then
+                local closest = nil
+                local distance = 30
+                local myHRP = LP.Character:FindFirstChild("HumanoidRootPart")
+
+                if myHRP then
+                    for _, plr in pairs(Players:GetPlayers()) do
+                        if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                            local mag = (myHRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                            if mag < distance then
+                                distance = mag
+                                closest = plr
+                            end
+                        end
+                    end
+                end
+
+                if closest and closest.Character and closest.Character:FindFirstChild("HumanoidRootPart") then
+                    closest.Character.HumanoidRootPart.CFrame = myHRP.CFrame * CFrame.new(0, 0, -2)
+                    LP.Character.Knife.Stab:FireServer("Slash")
+                end
+            end
+        end)
+    end
+end)
+
+
 local autocoin = false
 
-local function getRoot()
-    if LP.Character and LP.Character:FindFirstChild("HumanoidRootPart") then
-        return LP.Character.HumanoidRootPart
-    end
-    return nil
-end
+
 
 LP.CharacterAdded:Connect(function()
     repeat task.wait() until getRoot() ~= nil
@@ -1451,16 +1485,19 @@ task.spawn(function()
             local distance = math.huge
             local closest = nil
 			local tweenService = game:GetService("TweenService")
+			local tween
 
             for _, model in pairs(workspace:GetChildren()) do
                 local coinContainer = model:FindFirstChild("CoinContainer")
                 if coinContainer then
                     for _, coinServer in pairs(coinContainer:GetChildren()) do
                         if coinServer.Name == "Coin_Server" then
+							if closest ~= coinServer then
                             local mag = (root.Position - coinServer.Position).magnitude
                             if mag < distance then
                                 distance = mag
                                 closest = coinServer
+							end
                             end
                         end
                     end
@@ -1470,35 +1507,25 @@ task.spawn(function()
 			if closest then
 				local duration = math.min(distance / 25, 5)
                 local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-                local goal = {CFrame = closest.CFrame - Vector3.new(0,2,0)}
-                local tween = tweenService:Create(root, tweenInfo, goal)
+                local goal = {CFrame = closest.CFrame}
+                tween = tweenService:Create(root, tweenInfo, goal)
 
-                if activeTween then
-                    activeTween:Cancel()
+                if tween then
+                    tween:Destroy()
                 end
 
                 tween:Play()
-				root.Anchored = true
                 tween.Completed:Wait()
+				task.wait(0.1)
 
-                task.wait(0.1)
-
-                if closest then
-                    closest:Destroy()
-                end
+				closest:Destroy()
 			end
         end
     end
 end)
 
-task.spawn(function()
-	 while task.wait(0.1) do
-		local root = getRoot()
-		 if autocoin == false and root then
-			root.Anchored = false
-		 end
-	 end
-end)
+
+
 
 local main = Library:Init { Title = "ZENITH" }
 
@@ -1609,6 +1636,17 @@ local Toggle = GUI:Toggle({
 			silentaim = false
 		else
 			silentaim = true
+		end
+	end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "Kill Aura",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			killaura = false
+		else
+			killaura = true
 		end
 	end
 }, section)
