@@ -1556,6 +1556,75 @@ task.spawn(function()
 	end
 end)
 
+local xray = false
+
+task.spawn(function()
+	while task.wait(1) do
+		if xray then
+			for _, model in ipairs(workspace:GetChildren()) do
+				if model:FindFirstChild("CoinContainer") then
+					for _, child in ipairs(model:GetDescendants()) do
+						if child:IsA("BasePart") then
+							if child.Transparency == 0 then
+							child.Transparency = 0.75
+							end
+						end
+					end
+				end
+			end
+		else
+			for _, model in ipairs(workspace:GetChildren()) do
+				if model:FindFirstChild("CoinContainer") then
+					for _, child in ipairs(model:GetDescendants()) do
+						if child:IsA("BasePart") then
+							if child.Transparency == 0.75 then
+							child.Transparency = 0
+								end
+							end
+					end
+				end
+			end
+		end
+	end
+end)
+
+local gunesp = false
+
+task.spawn(function()
+    while task.wait(0.1) do
+        if gunesp then
+            for _, model in pairs(workspace:GetChildren()) do
+                local gunDrop = model:FindFirstChild("GunDrop")
+                if gunDrop and not gunDrop:FindFirstChild("GunCham") then
+                    local gp = Instance.new("Part")
+                    gp.Size = Vector3.new(2, 2, 2)
+                    gp.Position = gunDrop.Position
+                    gp.Name = "GunCham"
+                    gp.Anchored = true
+                    gp.CanCollide = false
+                    gp.Transparency = 0
+                    gp.Color = Color3.fromRGB(255, 0, 255)
+                    gp.Parent = gunDrop
+
+                    local hl = Instance.new("Highlight")
+                    hl.FillColor = Color3.fromRGB(255, 0, 255)
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.Adornee = gp
+                    hl.Parent = gp
+                end
+            end
+        else
+            for _, model in pairs(workspace:GetChildren()) do
+                local gunDrop = model:FindFirstChild("GunDrop")
+                if gunDrop then
+                    local cham = gunDrop:FindFirstChild("GunCham")
+                    if cham then cham:Destroy() end
+                end
+            end
+        end
+    end
+end)
+
 
 local main = Library:Init { Title = "ZENITH" }
 
@@ -1602,12 +1671,34 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Toggle = GUI:Toggle({
+	text = "Gun Esp",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			gunesp = false
+		else
+			gunesp = true
+		end
+	end
+}, section)
+
+local Toggle = GUI:Toggle({
 	text = "Coin Esp",
 	callback = function(ToggleActive)
 		if ToggleActive then
 			coinesp = false
 		else
 			coinesp = true
+		end
+	end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "XRAY",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			xray = false
+		else
+			xray = true
 		end
 	end
 }, section)
@@ -1633,17 +1724,6 @@ local Toggle = GUI:Toggle({
 }, section)
 
 local Toggle = GUI:Toggle({
-	text = "Noclip",
-	callback = function(ToggleActive)
-		if ToggleActive then
-			noclip = false
-		else
-			noclip = true
-		end
-	end
-}, section)
-
-local Toggle = GUI:Toggle({
 	text = "BHOP",
 	callback = function(ToggleActive)
 		if ToggleActive then
@@ -1662,6 +1742,17 @@ local Slider = GUI:Slider({
 	callback = function(value)
 		BHOPSPEED = value
 		end
+}, section)
+
+local Toggle = GUI:Toggle({
+	text = "Noclip",
+	callback = function(ToggleActive)
+		if ToggleActive then
+			noclip = false
+		else
+			noclip = true
+		end
+	end
 }, section)
 
 local section = GUI:Section({
@@ -1713,12 +1804,45 @@ local Slider = GUI:Slider({
 }, section)
 
 local Tab = GUI:CreateTab({
-	Text = "Anti Stuff",
+	Text = "Game Mods",
 	icon = "rbxassetid://2790547157"
 })
 
 local section = GUI:Section({
-	text = "Players"
+	text = "Innocent"
+}, Tab)
+
+local button1 = GUI:Button({
+    text = "Crash Murderer",
+    Callback = function()
+        for _, plrs in pairs(game:GetService("Players"):GetPlayers()) do
+            if plrs ~= LP and (plrs.Backpack:FindFirstChild("Knife") or (plrs.Character and plrs.Character:FindFirstChild("Knife"))) then
+                local Target = plrs
+                if Target and Target.Character and Target.Character:FindFirstChild("HumanoidRootPart") then
+                    local Thrust = Instance.new("BodyThrust")
+                    Thrust.Force = Vector3.new(9999, 9999, 9999)
+                    Thrust.Name = "YeetForce"
+                    Thrust.Parent = LP.Character:WaitForChild("HumanoidRootPart")
+
+                    repeat
+                        if not (Target.Character and Target.Character:FindFirstChild("HumanoidRootPart")) then break end
+                        LP.Character:WaitForChild("HumanoidRootPart").CFrame = Target.Character.HumanoidRootPart.CFrame
+                        Thrust.Location = Target.Character.HumanoidRootPart.Position
+                        game:GetService("RunService").Heartbeat:Wait()
+                    until not Target.Character:FindFirstChild("Head")
+
+                    Thrust:Destroy()
+                else
+                    print("Invalid player")
+                end
+            end
+        end
+    end
+}, section)
+
+
+local section = GUI:Section({
+	text = "Anti Stuff"
 }, Tab)
 
 local Toggle = GUI:Toggle({
