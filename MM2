@@ -1251,10 +1251,12 @@ end
 
 function CreateHighlight()
 	for i, v in pairs(Players:GetChildren()) do
-		if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
-			local hl = Instance.new("Highlight", v.Character)
-			hl.FillTransparency = 1
-			hl.OutlineTransparency = 1
+			if not v.Character:FindFirstChild("Highlight") then
+			  local hl = Instance.new("Highlight")
+  			  hl.Name = "Highlight"
+   			  hl.FillTransparency = 1
+  			  hl.OutlineTransparency = 1
+  			  hl.Parent = v.Character
 		end
 	end
 end
@@ -1263,15 +1265,15 @@ function UpdateHighlights()
 	for _, v in pairs(Players:GetChildren()) do
 		if v ~= LP and v.Character and v.Character:FindFirstChild("Highlight") then
 			Highlight = v.Character:FindFirstChild("Highlight")
-			if sheriffesp and v.Name == Sheriff or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) then
+			if sheriffesp and v.Name == Sheriff and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(0, 0, 225)
 				Highlight.FillTransparency = 0.5
 				Highlight.OutlineTransparency = 0
-			elseif murdesp and v.Name == Murder or v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") and IsAlive(v) then
+			elseif murdesp and v.Name == Murder and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(225, 0, 0)
 				Highlight.FillTransparency = 0.5
 				Highlight.OutlineTransparency = 0
-			elseif sheriffesp and v.Name == Hero or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
+			elseif sheriffesp and v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
 				Highlight.FillColor = Color3.fromRGB(255, 250, 0)
 				Highlight.FillTransparency = 0.5
 				Highlight.OutlineTransparency = 0
@@ -1286,32 +1288,27 @@ end
 
 
 function IsAlive(Player)
-	for i, v in pairs(roles) do
-		if Player.Name == i then
-			if not v.Killed and not v.Dead then
-				return true
-			else
-				return false
-			end
-		end
-	end
+    local data = roles[Player.Name]
+    return data and not data.Killed and not data.Dead
 end
 
-RunService.RenderStepped:connect(function()
-	roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
-	for i, v in pairs(roles) do
-		if v.Role == "Murderer" then
-			Murder = i
-		elseif v.Role == 'Sheriff'then
-			Sheriff = i
-		elseif v.Role == 'Hero'then
-			Hero = i
-		end
-	end
-	CreateHighlight()
-	UpdateHighlights()
+task.spawn(function()
+    while true do
+        roles = ReplicatedStorage:FindFirstChild("GetPlayerData", true):InvokeServer()
+        for i, v in pairs(roles) do
+            if v.Role == "Murderer" then
+                Murder = i
+            elseif v.Role == "Sheriff" then
+                Sheriff = i
+            elseif v.Role == "Hero" then
+                Hero = i
+            end
+        end
+        CreateHighlight()
+        UpdateHighlights()
+        task.wait(0.1)
+    end
 end)
-
 
 local coinesp = false
 task.spawn(function()
