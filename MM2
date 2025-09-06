@@ -1367,9 +1367,9 @@ task.spawn(function()
             if autogun and LP.Character and (not LP.Backpack:FindFirstChild("Knife") and not LP.Character:FindFirstChild("Knife")) then
                 for _, models in pairs(workspace:GetChildren()) do
                     if models:FindFirstChild("GunDrop") and LP.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = LP.Character.HumanoidRootPart - Vector3.new(0, -2, 0)
+                        local hrp = LP.Character.HumanoidRootPart
                         local org = hrp.CFrame
-                        hrp.CFrame = models.GunDrop.CFrame
+                        hrp.CFrame = models.GunDrop.CFrame + Vector3.new(0, -2, 0)
                         task.wait(0.01)
                         hrp.CFrame = org
                     end
