@@ -1265,20 +1265,20 @@ function UpdateHighlights()
 			Highlight = v.Character:FindFirstChild("Highlight")
 			if sheriffesp and v.Name == Sheriff or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-				hl.FillTransparency = 1
-				hl.OutlineTransparency = 1
+				hl.FillTransparency = 0
+				hl.OutlineTransparency = 0
 			elseif murdesp and v.Name == Murder or v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-				hl.FillTransparency = 1
-				hl.OutlineTransparency = 1
+				hl.FillTransparency = 0
+				hl.OutlineTransparency = 0
 			elseif sheriffesp and v.Name == Hero or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
 				Highlight.FillColor = Color3.fromRGB(255, 250, 0)
-				hl.FillTransparency = 1
-				hl.OutlineTransparency = 1
+				hl.FillTransparency = 0
+				hl.OutlineTransparency = 0
 			elseif innocentesp then
 				Highlight.FillColor = Color3.fromRGB(0, 225, 0)
-				hl.FillTransparency = 1
-				hl.OutlineTransparency = 1
+				hl.FillTransparency = 0
+				hl.OutlineTransparency = 0
 			end
 		end
 	end
