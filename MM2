@@ -1252,7 +1252,9 @@ end
 function CreateHighlight()
 	for i, v in pairs(Players:GetChildren()) do
 		if v ~= LP and v.Character and not v.Character:FindFirstChild("Highlight") then
-			Instance.new("Highlight", v.Character)
+			local hl = Instance.new("Highlight", v.Character)
+			hl.FillTransparency = 1
+			hl.OutlineTransparency = 1
 		end
 	end
 end
@@ -1261,14 +1263,22 @@ function UpdateHighlights()
 	for _, v in pairs(Players:GetChildren()) do
 		if v ~= LP and v.Character and v.Character:FindFirstChild("Highlight") then
 			Highlight = v.Character:FindFirstChild("Highlight")
-			if sheriffesp and v.Name == Sheriff and IsAlive(v) then
+			if sheriffesp and v.Name == Sheriff or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(0, 0, 225)
-			elseif murdesp and v.Name == Murder and IsAlive(v) then
+				hl.FillTransparency = 1
+				hl.OutlineTransparency = 1
+			elseif murdesp and v.Name == Murder or v.Backpack:FindFirstChild("Knife") or v.Character:FindFirstChild("Knife") and IsAlive(v) then
 				Highlight.FillColor = Color3.fromRGB(225, 0, 0)
-			elseif sheriffesp and v.Name == Hero and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
+				hl.FillTransparency = 1
+				hl.OutlineTransparency = 1
+			elseif sheriffesp and v.Name == Hero or v.Backpack:FindFirstChild("Gun") or v.Character:FindFirstChild("Gun") and IsAlive(v) and not IsAlive(game.Players[Sheriff]) then
 				Highlight.FillColor = Color3.fromRGB(255, 250, 0)
+				hl.FillTransparency = 1
+				hl.OutlineTransparency = 1
 			elseif innocentesp then
 				Highlight.FillColor = Color3.fromRGB(0, 225, 0)
+				hl.FillTransparency = 1
+				hl.OutlineTransparency = 1
 			end
 		end
 	end
@@ -1342,13 +1352,15 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
 end)
 
 local noclip = false
-runService.RenderStepped:Connect(function()
+
+runService.Heartbeat:Connect(function()
         local char = LP.Character
+		if noclip then
         if char then
-            for _, partName in pairs({"Head", "UpperTorso", "LowerTorso", "HumanoidRootPart"}) do
-                local part = char:FindFirstChild(partName)
-                if part then
-                    part.CanCollide = not noclip
+            for _, parts in pairs(char:GetChildren()) do
+                if parts:IsA("BasePart") then
+                    parts.CanCollide = false
+				end
             end
         end
     end
